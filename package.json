@@ -20,18 +20,16 @@
 		"utils"
 	],
 	"scripts": {
-		"format": "prettier --write \"./**/*.{js,json}\""
+		"build": "tsc -p tsconfig.json",
+		"format": "prettier --write \"./src/**/*.{ts,js,json}\""
 	},
 	"dependencies": {
 		"chalk": "^4.1.2",
-		"cli-alerts": "^1.2.2",
-		"cli-handle-error": "^4.4.0",
-		"cli-handle-unhandled": "^1.1.1",
-		"cli-meow-help": "^3.1.0",
-		"cli-welcome": "^2.2.2",
-		"meow": "^9.0.0"
+		"commander": "^12.0.0"
 	},
 	"devDependencies": {
-		"prettier": "^3.2.5"
+		"@types/node": "^20.11.16",
+		"prettier": "^3.2.5",
+		"typescript": "^5.3.3"
 	}
 }
