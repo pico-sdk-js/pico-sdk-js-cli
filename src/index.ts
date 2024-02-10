@@ -7,14 +7,26 @@
  * @author jt000 <https://www.github.com/jt000>
  */
 
-const { program } = require('commander');
+import repl, { REPLServer } from 'repl';
+import pkg from '../package.json';
+import { Context } from 'vm';
 
-program
-  .option('--first')
-  .option('-s, --separator <char>');
+console.clear();
+console.log(`${pkg.name} v${pkg.version}`);
+console.log(`>> ${pkg.description}\n`);
 
-program.parse();
+const server = repl.start({
+	eval: remoteEval,
+	preview: false
+});
 
-const options = program.opts();
-const limit = options.first ? 1 : undefined;
-console.log(program.args[0].split(options.separator, limit));
+function remoteEval(
+	this: REPLServer,
+	evalCmd: string,
+	context: Context,
+	file: string,
+	cb: (err: Error | null, result: any) => void
+): void {
+	// Always return 3 :)
+	cb(null, 3);
+}

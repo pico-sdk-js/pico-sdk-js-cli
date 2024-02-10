@@ -4,28 +4,29 @@
 	"version": "0.0.1",
 	"license": "GPL-3.0",
 	"bin": {
-		"pico-sdk-js-cli": "index.js",
-		"psj": "index.js"
+		"pico-sdk-js-cli": "dist/index.js",
+		"psj": "dist/index.js"
 	},
 	"author": {
 		"name": "jt000",
 		"url": "https://www.github.com/jt000"
 	},
 	"keywords": [
+		"pico-sdk-js",
 		"pico-sdk-js-cli",
-		"jt000"
+		"pico-sdk",
+		"raspberry pi",
+		"pico",
+		"pico-w"
 	],
 	"files": [
-		"index.js",
-		"utils"
+		"dist"
 	],
 	"scripts": {
-		"build": "tsc -p tsconfig.json",
+		"start": "npm run build && node dist/index.js",
+		"pack": "npm run build && npm pack --pack-destination dist",
+		"build": "tsc --project tsconfig.json",
 		"format": "prettier --write \"./src/**/*.{ts,js,json}\""
-	},
-	"dependencies": {
-		"chalk": "^4.1.2",
-		"commander": "^12.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^20.11.16",
