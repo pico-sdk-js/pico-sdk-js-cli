@@ -19,7 +19,7 @@
             ],
             "env": {
                 // Uncomment below to set a local executable to connect to via ".connect --local"
-                // "PSJ_LOCAL": "/home/jt000/_git/pico-sdk-js/build/pico-sdk-js-0.0.1"
+                "PSJ_LOCAL": "${workspaceFolder}/../pico-sdk-js/build/pico-sdk-js-0.0.1"
             }
         }
     ]

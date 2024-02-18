@@ -9,15 +9,18 @@
 
 import pkg from '../package.json';
 import repl from 'repl';
-import { LocalProcessPicoSdkJsEngineConnection, PicoSdkJsEngineConnection } from './remote_process';
+import { LocalProcessPicoSdkJsEngineConnection, LogLevel, LogMessage, PicoSdkJsEngineConnection } from './remote_process';
 import { type Context } from 'vm';
 import minimist from 'minimist';
+import chalk from 'chalk';
 
 console.clear();
 console.log(`${pkg.name} v${pkg.version}`);
 console.log(`>> ${pkg.description}\n`);
 
 let connection: PicoSdkJsEngineConnection | null = null;
+
+let maxLogLevel: LogLevel = LogLevel.Error;
 
 const server = repl.start({
 	eval: remoteEval,
@@ -53,6 +56,32 @@ function remoteEval(
 	cb(null, 3);
 }
 
+function logFn(repl: repl.REPLServer, msg: LogMessage) {
+	if (msg.level > maxLogLevel) return;
+
+	repl.clearBufferedCommand();
+
+	switch (msg.level) {
+		case LogLevel.Error:
+			console.log(`${chalk.red('ERR')}: ${msg.msg}`);
+			break;
+		case LogLevel.Warning:
+			console.log(`${chalk.yellow('WRN')}: ${msg.msg}`);
+			break;
+		case LogLevel.Debug:
+			console.log(`${chalk.green('DBG')}: ${msg.msg}`);
+			break;
+		case LogLevel.Trace:
+			console.log(`${chalk.blue('TRC')}: ${msg.msg}`);
+			break;
+		default:
+			console.log(msg.msg);
+			break;
+	}
+
+	repl.displayPrompt(true);
+}
+
 async function connectToPico(this: repl.REPLServer, text: string): Promise<void> {
 	const unknownArgs: string[] = [];
 	const args = minimist(text.split(' '), {
@@ -78,6 +107,7 @@ async function connectToPico(this: repl.REPLServer, text: string): Promise<void>
 	if (args.local && localPath) {
 		console.log('Connecting to local process at %s', localPath);
 		connection = new LocalProcessPicoSdkJsEngineConnection(localPath);
+		connection.log = (msg) => logFn(this, msg);
 		await connection.open();
 	} else {
 		console.error("Serial connections not yet supported.");

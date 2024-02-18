@@ -1,5 +1,4 @@
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
-import { error } from "console";
 import { randomInt } from "crypto";
 import path from "path";
 
@@ -11,6 +10,18 @@ class CommandRequest<T = {}> {
     constructor(cmd: string) {
         this.cmd = cmd;
     }
+}
+
+export enum LogLevel {
+    Error = 0,
+    Warning = 1,
+    Debug = 2,
+    Trace = 3
+}
+
+export interface LogMessage {
+    level: LogLevel,
+    msg: string
 }
 
 interface CommandResponse<T = any> {
@@ -38,6 +49,8 @@ export abstract class PicoSdkJsEngineConnection {
     public abstract close(): Promise<void>;
     protected abstract sendCommand(cmd: CommandRequest): Promise<CommandResponse>;
 
+    public log: (log:LogMessage) => void = () => {};
+
     public ping(): Promise<CommandResponse> {
         let pingCmd = new CommandRequest("ping");
         return this.sendCommand(pingCmd);
@@ -61,7 +74,10 @@ export abstract class PicoSdkJsEngineConnection {
                 console.error("UNKNOWN ETAG: #%d", cmdResponse.etag);
             }
         } else {
-            console.log(cmdResponse);
+            if (cmdResponse.cmd === "log") {
+                const logResponseValue = cmdResponse.value as LogMessage;
+                this.log(logResponseValue);
+            }
         }
     }
 }
@@ -80,7 +96,7 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
             const cwd = path.dirname(this.path);
             const procPath = "./" + path.basename(this.path);
 
-            const childprocess = spawn(procPath, {
+            const childprocess = spawn(procPath, ['--echo_off'], {
                 shell: true,
                 cwd: cwd,
                 stdio: 'pipe',
