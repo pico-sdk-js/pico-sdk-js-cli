@@ -8,11 +8,15 @@ export class PsjReplServer {
     private connection: PicoSdkJsEngineConnection | null = null;
     private maxLogLevel: LogLevel = LogLevel.Error;
     private server: REPLServer;
+    private commandInProgress: boolean = false;
     
     constructor() {
         this.server = repl.start({
-            eval: this.remoteEval,
-            preview: false
+            eval: (evalCmd: string, context: Context, file: string, cb: (err: Error | null, result: any) => void) => {
+                this.remoteEval(evalCmd, context, file, cb);
+            },
+            preview: false,
+            ignoreUndefined: true
         });
     
         this.server.on("exit", async () => {
@@ -37,26 +41,37 @@ export class PsjReplServer {
     private logFn(msg: LogMessage) {
         if (msg.level > this.maxLogLevel) return;
 
-        this.server.clearBufferedCommand();
-
         logger.log(msg);
 
-        this.server.displayPrompt(true);
+        if (!this.commandInProgress) {
+            this.server.displayPrompt(true);
+        }
     }
 
-    private remoteEval(
-        this: repl.REPLServer,
+    private async remoteEval(
         evalCmd: string,
         context: Context,
         file: string,
         cb: (err: Error | null, result: any) => void
-    ): void {
-        // Always return 3 :)
-        cb(null, 3);
+    ): Promise<void> {
+        try {
+            this.commandInProgress = true;
+            const result = await this.exec(evalCmd);
+            cb(null, result);
+        } catch (error) {
+            let e: Error;
+            if (error instanceof Error) e = error;
+            else e = new Error(String(error))
+
+            cb(e, null);
+        } finally {
+            this.commandInProgress = false;
+        }
     }
 
     private async wrapCommand(action: () => Promise<void>): Promise<void> {
         try {
+            this.commandInProgress = true;
             await action();
         } catch (error) {
             let message: string;
@@ -68,8 +83,23 @@ export class PsjReplServer {
                 msg: message
             });
         } finally {
+            this.commandInProgress = false;
             this.server.displayPrompt();
         }
+    }
+
+    private async exec(cmd: string): Promise<any> {
+        if (this.connection === null) {
+            this.logFn({ level: LogLevel.Error, msg: "Not connected" });
+            return undefined;
+        }
+
+        var response = await this.connection.exec(cmd);
+        if (response.value instanceof Error) {
+            throw response.value;
+        }
+
+        return response.value;
     }
 
     private async connectToPico(text: string): Promise<void> {

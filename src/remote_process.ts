@@ -56,8 +56,22 @@ export abstract class PicoSdkJsEngineConnection {
         return this.sendCommand(pingCmd);
     }
 
+    public exec(cmd: string): Promise<CommandResponse> {
+        let execCmd = new CommandRequest<{code:string}>("exec");
+        execCmd.args = { code: cmd };
+        return this.sendCommand(execCmd);
+    }
+
     protected processResponseString(response: string): void {
-        const cmdResponse: CommandResponse = JSON.parse(response) as CommandResponse;
+        let cmdResponse: CommandResponse;
+        
+        try {
+            cmdResponse = JSON.parse(response) as CommandResponse;
+        } catch (e) {
+            console.log(response);
+            return;
+        }
+
         if (cmdResponse.etag) {
             const handler = this.etags[cmdResponse.etag];
             delete this.etags[cmdResponse.etag];
