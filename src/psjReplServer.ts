@@ -32,14 +32,10 @@ export class PsjReplServer {
             help: "Disconnect a Pico running Pico-sdk-JS",
             action: (text: string) => this.wrapCommand(() => this.disconnectFromPico())
         });
-    
-        this.server.defineCommand("ping", {
-            action: (text: string) => this.wrapCommand(() => this.pingPico())
-        });    
     }
 
     private logFn(msg: LogMessage) {
-        if (msg.level > this.maxLogLevel) return;
+       if (msg.level > this.maxLogLevel && msg.level !== LogLevel.User) return;
 
         logger.log(msg);
 
@@ -136,15 +132,6 @@ export class PsjReplServer {
             await this.connection.close();
             this.connection = null;
         }
-    }
-
-    private async pingPico(): Promise<void> {
-        if (this.connection === null) {
-            throw new Error("Not connected");
-        }
-
-        await this.connection.ping();
-        console.log("pong");
     }
 }
 

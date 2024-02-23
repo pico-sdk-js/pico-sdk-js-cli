@@ -13,7 +13,7 @@
             ],
             "program": "${workspaceFolder}/dist/index.js",
             "preLaunchTask": "npm: build",
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
             ],

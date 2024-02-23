@@ -4,6 +4,8 @@ import chalk from 'chalk';
 class PSJLogger {
 
     log(msg: LogMessage) {
+
+        process.stdout.clearLine(0);
         switch (msg.level) {
             case LogLevel.Error:
                 console.log(`${chalk.red('ERR')}: ${msg.msg}`);

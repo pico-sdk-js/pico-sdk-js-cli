@@ -16,7 +16,8 @@ export enum LogLevel {
     Error = 0,
     Warning = 1,
     Debug = 2,
-    Trace = 3
+    Trace = 3,
+    User = 4
 }
 
 export interface LogMessage {
