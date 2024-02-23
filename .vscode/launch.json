@@ -12,6 +12,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/index.js",
+            "args": ["--auto-connect", "--local"],
             "preLaunchTask": "npm: build",
             "console": "integratedTerminal",
             "outFiles": [

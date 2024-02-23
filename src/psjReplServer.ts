@@ -1,16 +1,19 @@
 import repl, { REPLCommandAction, REPLServer } from 'repl';
-import minimist from "minimist";
 import { Context } from "vm";
 import { PicoSdkJsEngineConnection, LogLevel, LogMessage, LocalProcessPicoSdkJsEngineConnection } from "./remote_process";
 import { logger } from './psjLogger';
+import Yargs from 'yargs/yargs';
 
 export class PsjReplServer {
     private connection: PicoSdkJsEngineConnection | null = null;
     private maxLogLevel: LogLevel = LogLevel.Error;
-    private server: REPLServer;
+    private server?: REPLServer;
     private commandInProgress: boolean = false;
     
     constructor() {
+    }
+
+    public start() {
         this.server = repl.start({
             eval: (evalCmd: string, context: Context, file: string, cb: (err: Error | null, result: any) => void) => {
                 this.remoteEval(evalCmd, context, file, cb);
@@ -35,12 +38,12 @@ export class PsjReplServer {
     }
 
     private logFn(msg: LogMessage) {
-       if (msg.level > this.maxLogLevel && msg.level !== LogLevel.User) return;
+        if (msg.level > this.maxLogLevel && msg.level !== LogLevel.User) return;
 
         logger.log(msg);
 
         if (!this.commandInProgress) {
-            this.server.displayPrompt(true);
+            this.server?.displayPrompt(true);
         }
     }
 
@@ -80,11 +83,11 @@ export class PsjReplServer {
             });
         } finally {
             this.commandInProgress = false;
-            this.server.displayPrompt();
+            this.server?.displayPrompt();
         }
     }
 
-    private async exec(cmd: string): Promise<any> {
+    public async exec(cmd: string): Promise<any> {
         if (this.connection === null) {
             this.logFn({ level: LogLevel.Error, msg: "Not connected" });
             return undefined;
@@ -98,15 +101,24 @@ export class PsjReplServer {
         return response.value;
     }
 
-    private async connectToPico(text: string): Promise<void> {
-        const unknownArgs: string[] = [];
-        const args = minimist(text.split(' '), {
-            boolean: ["local"],
-            unknown: (arg: string) => { if (arg) unknownArgs.push(arg); return false; }
+    public async connectToPico(text: string): Promise<void> {
+        let failed = false;
+        const yargs = Yargs(text).fail((msg: string, err: Error) => {
+            failed = true;
+            console.error(msg);
+            yargs.showHelp();
+        }).strict().exitProcess(false);
+
+        yargs.option('local', {
+            alias: 'l',
+            type: 'boolean',
+            description: 'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.',
         });
 
-        if (unknownArgs.length > 0) {
-            throw new Error(`Unknown argument(s): ${unknownArgs}`);
+        const args = await yargs.parseAsync();
+
+        if (failed || args.help || args.version) {
+            return;
         }
 
         if (this.connection !== null) {
@@ -133,8 +145,4 @@ export class PsjReplServer {
             this.connection = null;
         }
     }
-}
-
-export function startReplServer(): PsjReplServer {
-    return new PsjReplServer();
 }

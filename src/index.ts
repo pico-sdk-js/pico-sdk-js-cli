@@ -8,10 +8,30 @@
  */
 
 import pkg from '../package.json';
-import { startReplServer } from './psjReplServer';
+import { PsjReplServer } from './psjReplServer';
+import * as yargs from 'yargs';
 
 console.clear();
 console.log(`${pkg.name} v${pkg.version}`);
 console.log(`>> ${pkg.description}\n`);
 
-const server = startReplServer();
+(async function () {
+    const args = yargs.strict()
+        .option('auto-connect', {
+            alias: 'ac',
+            type: 'boolean',
+            description: 'Automatically connects on start'
+        }).option('local', {
+            alias: 'l',
+            type: 'boolean',
+            description: 'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.',
+        }).parseSync();
+
+    const server = new PsjReplServer();
+
+    if (args.autoConnect) {
+        await server.connectToPico(args.local ? '--local' : '');
+    }
+
+    server.start();
+})();
