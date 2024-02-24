@@ -37,6 +37,10 @@ export class PsjReplServer {
         });
     }
 
+    public setLogLevel(level: LogLevel) {
+        this.maxLogLevel = level;
+    }
+
     private logFn(msg: LogMessage) {
         if (msg.level > this.maxLogLevel && msg.level !== LogLevel.User) return;
 
