@@ -5,7 +5,7 @@ import { logger } from './psjLogger';
 import Yargs from 'yargs/yargs';
 
 export class PsjReplServer {
-    private connection: PicoSdkJsEngineConnection | null = null;
+    private connection?: PicoSdkJsEngineConnection;
     private maxLogLevel: LogLevel = LogLevel.Error;
     private server?: REPLServer;
     private commandInProgress: boolean = false;
@@ -18,13 +18,18 @@ export class PsjReplServer {
             eval: (evalCmd: string, context: Context, file: string, cb: (err: Error | null, result: any) => void) => {
                 this.remoteEval(evalCmd, context, file, cb);
             },
-            preview: false,
-            ignoreUndefined: true
+            preview: false
         });
     
         this.server.on("exit", async () => {
-            await this.connection?.close();
+            const closePromise = this.connection?.close();
+            this.server = undefined;
+            this.connection = undefined;
+            
+            await closePromise;
         });
+
+        this.server.on("reset", async () => this.wrapCommand(() => this.resetContextOnPico()));
     
         this.server.defineCommand("connect", {
             help: "Connect to a Pico running Pico-Sdk-JS",
@@ -91,8 +96,22 @@ export class PsjReplServer {
         }
     }
 
+    public async resetContextOnPico(): Promise<any> {
+        if (!this.connection) {
+            this.logFn({ level: LogLevel.Error, msg: "Not connected" });
+            return undefined;
+        }
+
+        var response = await this.connection.reset();
+        if (response.value instanceof Error) {
+            throw response.value;
+        }
+
+        return response.value;
+    }
+
     public async exec(cmd: string): Promise<any> {
-        if (this.connection === null) {
+        if (!this.connection) {
             this.logFn({ level: LogLevel.Error, msg: "Not connected" });
             return undefined;
         }
@@ -125,7 +144,7 @@ export class PsjReplServer {
             return;
         }
 
-        if (this.connection !== null) {
+        if (this.connection) {
             throw new Error("Already connected, run .disconnect close current connection first");
         }
 
@@ -143,10 +162,10 @@ export class PsjReplServer {
     }
 
     private async disconnectFromPico(): Promise<void> {
-        if (this.connection !== null) {
+        if (this.connection) {
             console.log("Disconnecting ... ");
             await this.connection.close();
-            this.connection = null;
+            this.connection = undefined;
         }
     }
 }

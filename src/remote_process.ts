@@ -52,15 +52,15 @@ export abstract class PicoSdkJsEngineConnection {
 
     public log: (log:LogMessage) => void = () => {};
 
-    public ping(): Promise<CommandResponse> {
-        let pingCmd = new CommandRequest("ping");
-        return this.sendCommand(pingCmd);
-    }
-
     public exec(cmd: string): Promise<CommandResponse> {
         let execCmd = new CommandRequest<{code:string}>("exec");
         execCmd.args = { code: cmd };
         return this.sendCommand(execCmd);
+    }
+
+    public reset(): Promise<CommandResponse> {
+        let resetCmd = new CommandRequest("reset");
+        return this.sendCommand(resetCmd);
     }
 
     protected processResponseString(response: string): void {
@@ -138,6 +138,11 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
                         this.interval = null;
                     }
 
+                    this.log({
+                        level: (code === 0 ? LogLevel.Trace : LogLevel.Error),
+                        msg: `Process exited with code ${code}`
+                    });
+
                     this.process = null;
                 });
                 
@@ -162,7 +167,7 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
         return new Promise<CommandResponse>((resolve, reject) =>{
             if (this.process === null)
             {
-                reject("Not connected");
+                reject("Process not running");
                 return;
             }
 

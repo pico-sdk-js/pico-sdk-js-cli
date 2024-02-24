@@ -13,8 +13,9 @@ import * as yargs from 'yargs';
 import { LogLevel } from './remote_process';
 
 console.clear();
-console.log(`${pkg.name} v${pkg.version}`);
+console.log(`Welcome to ${pkg.name} v${pkg.version}`);
 console.log(`>> ${pkg.description}\n`);
+console.log('Type ".help" for more information.');
 
 const logLevels: Record<string,LogLevel> = { 'error': LogLevel.Error, 'warning': LogLevel.Warning, 'debug': LogLevel.Debug, 'trace': LogLevel.Trace };
 
