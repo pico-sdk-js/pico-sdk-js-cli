@@ -1,4 +1,4 @@
-import { timers } from 'pico-sdk/hardware';
+import { time_us_32 } from 'pico/hardware';
 
-const usTime32 = timers.time_us_32();
-print(`Time in microseconds: ${ustime32}`);
+const usTime32 = time_us_32();
+print(`Time in microseconds: ${usTime32}`);

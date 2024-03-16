@@ -8,9 +8,9 @@
  */
 
 import pkg from '../package.json';
+import { LogLevel } from './psjLogger';
 import { PsjReplServer } from './psjReplServer';
 import * as yargs from 'yargs';
-import { LogLevel } from './remote_process';
 
 console.clear();
 console.log(`Welcome to ${pkg.name} v${pkg.version}`);

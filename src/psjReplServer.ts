@@ -1,8 +1,10 @@
-import repl, { REPLCommandAction, REPLServer } from 'repl';
-import { Context } from "vm";
-import { PicoSdkJsEngineConnection, LogLevel, LogMessage, LocalProcessPicoSdkJsEngineConnection } from "./remote_process";
-import { logger } from './psjLogger';
+import repl, { REPLServer } from 'repl';
+import { Context } from 'vm';
 import Yargs from 'yargs/yargs';
+import { LocalProcessPicoSdkJsEngineConnection } from './LocalProcessPicoSdkJsEngineConnection';
+import { CommandError, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
+import { LogLevel, LogMessage, logger } from './psjLogger';
+import { SerialPicoSdkJsEngineConnection } from './SerialPicoSdkJsEngineConnection';
 
 export class PsjReplServer {
     private connection?: PicoSdkJsEngineConnection;
@@ -18,7 +20,8 @@ export class PsjReplServer {
             eval: (evalCmd: string, context: Context, file: string, cb: (err: Error | null, result: any) => void) => {
                 this.remoteEval(evalCmd, context, file, cb);
             },
-            preview: false
+            preview: false,
+            ignoreUndefined: true
         });
     
         this.server.on("exit", async () => {
@@ -67,6 +70,12 @@ export class PsjReplServer {
             const result = await this.exec(evalCmd);
             cb(null, result);
         } catch (error) {
+            if (error instanceof CommandError) {
+                logger.log({ level: LogLevel.Error, msg: error.message });
+                cb(null, undefined);
+                return;
+            }
+            
             let e: Error;
             if (error instanceof Error) e = error;
             else e = new Error(String(error))
@@ -126,17 +135,29 @@ export class PsjReplServer {
 
     public async connectToPico(text: string): Promise<void> {
         let failed = false;
-        const yargs = Yargs(text).fail((msg: string, err: Error) => {
+        const yargs = Yargs(text).options({
+            local: {
+                alias: 'l',
+                type: 'boolean',
+                description: 'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.',
+                hidden: true
+            },
+            device: {
+                alias: 'D',
+                type: 'string',
+                description: 'The device name to connect to.',
+                // default: '/dev/ttyACM0'
+            }
+        }).fail((msg: string, err: Error) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
         }).strict().exitProcess(false);
 
-        yargs.option('local', {
-            alias: 'l',
-            type: 'boolean',
-            description: 'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.',
-        });
+
+        yargs.conflicts('local', 'device');
+
+        yargs.example('.connect --device /dev/ttyACM0', 'connect to the "/dev/ttyACM0" device.');
 
         const args = await yargs.parseAsync();
 
@@ -150,14 +171,22 @@ export class PsjReplServer {
 
         console.log("Connecting ... ");
 
-        const localPath = process.env.PSJ_LOCAL;
-        if (args.local && localPath) {
+        if (args.local) {
+            const localPath = process.env.PSJ_LOCAL;
+            if (!localPath) {
+                throw new Error("Local path not defined. Must set environment variable 'PSJ_LOCAL' to the path of the pico-sdk-js executable.");
+            }
+
             console.log('Connecting to local process at %s', localPath);
             this.connection = new LocalProcessPicoSdkJsEngineConnection(localPath);
             this.connection.log = (msg) => this.logFn(msg);
             await this.connection.open();
         } else {
-            throw new Error("Serial connections not yet supported.");
+            const device = args.device ?? '/dev/ttyACM0';
+            console.log('Connecting to serial device at %s', device);
+            this.connection = new SerialPicoSdkJsEngineConnection(device);
+            this.connection.log = (msg) => this.logFn(msg);
+            await this.connection.open();
         }
     }
 
