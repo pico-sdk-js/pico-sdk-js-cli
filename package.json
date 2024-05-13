@@ -24,9 +24,10 @@
 	],
 	"scripts": {
 		"start": "npm run build && node dist/index.js",
-		"pack": "npm run build && npm pack --pack-destination dist",
+		"pack": "npm run build && npm run format-check && npm pack --pack-destination dist",
 		"build": "tsc --project tsconfig.json",
-		"format": "prettier --write \"./src/**/*.{ts,js,json}\""
+		"format": "prettier --write \"./src/**/*.{ts,js,json}\"",
+		"format-check": "prettier --check \"./src/**/*.{ts,js,json}\""
 	},
 	"devDependencies": {
 		"@types/minimist": "^1.2.5",

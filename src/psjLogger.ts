@@ -9,14 +9,12 @@ export enum LogLevel {
 }
 
 export interface LogMessage {
-    level: LogLevel,
-    msg: string
+    level: LogLevel;
+    msg: string;
 }
 
 class PSJLogger {
-
     log(msg: LogMessage) {
-
         process.stdout.clearLine(0);
         console.log(this.getString(msg));
     }

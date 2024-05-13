@@ -1,40 +1,47 @@
-import Yargs from "yargs/yargs";
-import { PsjReplServer } from "../psjReplServer";
+import Yargs from 'yargs/yargs';
+import { PsjReplServer } from '../psjReplServer';
 import fs from 'fs';
 import path from 'path';
-import { ReadCommandOptions } from "../PicoSdkJsEngineConnection";
+import { ReadCommandOptions } from '../PicoSdkJsEngineConnection';
 
 export async function readCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command("* <remote-path>", "Read a file from the connected device")
-        .usage(".read <remote-path>")
-        .positional("remote-path", {
+        .command('* <remote-path>', 'Read a file from the connected device')
+        .usage('.read <remote-path>')
+        .positional('remote-path', {
             alias: 'r',
             type: 'string',
             description: 'The name to load from the Pico device',
             normalize: true,
             demandOption: true
-        }).options({
-            "local-path": {
+        })
+        .options({
+            'local-path': {
                 alias: 'p',
                 type: 'string',
                 description: 'The local file to write from the Pico device',
                 normalize: true
             },
-            "overwrite": {
+            overwrite: {
                 alias: 'o',
                 type: 'boolean',
                 description: 'Overwrites existing files if they already exist with the same path name',
                 implies: ['local-path']
             }
-        }).fail((msg: string, err: Error) => {
+        })
+        .fail((msg: string, err: Error) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
-        }).strict().exitProcess(false);
+        })
+        .strict()
+        .exitProcess(false);
 
-    yargs.example('.read file.js --local-path ./myFile.js', 'read from the Pico with the file name "file.js" and save the local "myFile.js".');
+    yargs.example(
+        '.read file.js --local-path ./myFile.js',
+        'read from the Pico with the file name "file.js" and save the local "myFile.js".'
+    );
     yargs.example('.read file.js', 'read from the Pico with the file name "file.js" and write to teh screen.');
 
     const args = await yargs.parseAsync();
@@ -45,7 +52,7 @@ export async function readCommand(replServer: PsjReplServer, text: string): Prom
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error("Not connected, run .connect to connect to a device running Pico-Sdk-JS.");
+        throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
     }
 
     const srcName = args.remotePath;
@@ -74,14 +81,13 @@ export async function readCommand(replServer: PsjReplServer, text: string): Prom
         maxSegments = value.nSegs;
         currentSegment++;
     }
-    
+
     if (destName) {
         console.log('Writing output to "%s"', destName);
-        fs.writeFileSync(destName, contents, { flush: true, flag: args.overwrite ? "w" : "wx" });
+        fs.writeFileSync(destName, contents, { flush: true, flag: args.overwrite ? 'w' : 'wx' });
     } else {
         console.log(contents);
     }
 
     console.log('%d bytes (%d segments) read', bytesRead, currentSegment);
 }
-

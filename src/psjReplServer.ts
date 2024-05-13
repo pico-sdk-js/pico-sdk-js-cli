@@ -17,8 +17,7 @@ export class PsjReplServer {
     private server: REPLServer | null = null;
     private commandInProgress: boolean = false;
 
-    constructor() {
-    }
+    constructor() {}
 
     public getConnection(): PicoSdkJsEngineConnection | null {
         return this.connection;
@@ -32,7 +31,9 @@ export class PsjReplServer {
 
         if (connection) {
             this.connection = connection;
-            this.connection.log = (m) => { this.logFn(m) };
+            this.connection.log = (m) => {
+                this.logFn(m);
+            };
         }
     }
 
@@ -44,56 +45,56 @@ export class PsjReplServer {
             preview: false,
             ignoreUndefined: true
         });
-    
-        this.server.on("exit", async () => {
+
+        this.server.on('exit', async () => {
             const closePromise = this.connection?.close();
             this.server = null;
             this.connection = null;
-            
+
             await closePromise;
         });
 
-        this.server.on("reset", async () => this.wrapCommand(() => this.resetContextOnPico()));
-    
-        this.server.defineCommand("connect", {
-            help: "Connect to a Pico running Pico-Sdk-JS",
+        this.server.on('reset', async () => this.wrapCommand(() => this.resetContextOnPico()));
+
+        this.server.defineCommand('connect', {
+            help: 'Connect to a Pico running Pico-Sdk-JS',
             action: (text: string) => this.wrapCommand(() => connectToPico(this, text))
         });
-    
-        this.server.defineCommand("disconnect", {
-            help: "Disconnect a Pico running Pico-Sdk-JS",
+
+        this.server.defineCommand('disconnect', {
+            help: 'Disconnect a Pico running Pico-Sdk-JS',
             action: (_text: string) => this.wrapCommand(() => disconnectFromPico(this))
         });
 
-        this.server.defineCommand("stats", {
-            help: "Get information on the connected device",
+        this.server.defineCommand('stats', {
+            help: 'Get information on the connected device',
             action: (text: string) => this.wrapCommand(() => statsCommand(this, text))
         });
 
-        this.server.defineCommand("ls", {
-            help: "List files stored on the connected device",
+        this.server.defineCommand('ls', {
+            help: 'List files stored on the connected device',
             action: (text: string) => this.wrapCommand(() => lsCommand(this, text))
         });
 
-        this.server.defineCommand("write", {
-            help: "Write a local file to the connected device",
+        this.server.defineCommand('write', {
+            help: 'Write a local file to the connected device',
             action: (text: string) => this.wrapCommand(() => writeCommand(this, text))
-        });        
+        });
 
-        this.server.defineCommand("read", {
-            help: "Read a file on the connected device",
+        this.server.defineCommand('read', {
+            help: 'Read a file on the connected device',
             action: (text: string) => this.wrapCommand(() => readCommand(this, text))
-        });        
+        });
 
-        this.server.defineCommand("delete", {
-            help: "Delete a file on the connected device",
+        this.server.defineCommand('delete', {
+            help: 'Delete a file on the connected device',
             action: (text: string) => this.wrapCommand(() => deleteCommand(this, text))
-        });        
+        });
 
-        this.server.defineCommand("format", {
-            help: "Delete all files and reformat the connected device",
+        this.server.defineCommand('format', {
+            help: 'Delete all files and reformat the connected device',
             action: (text: string) => this.wrapCommand(() => formatCommand(this, text))
-        });        
+        });
     }
 
     public setLogLevel(level: LogLevel) {
@@ -126,10 +127,10 @@ export class PsjReplServer {
                 cb(null, undefined);
                 return;
             }
-            
+
             let e: Error;
             if (error instanceof Error) e = error;
-            else e = new Error(String(error))
+            else e = new Error(String(error));
 
             cb(e, null);
         } finally {
@@ -158,7 +159,7 @@ export class PsjReplServer {
 
     public async resetContextOnPico(): Promise<any> {
         if (!this.connection) {
-            this.logFn({ level: LogLevel.Error, msg: "Not connected" });
+            this.logFn({ level: LogLevel.Error, msg: 'Not connected' });
             return undefined;
         }
 
@@ -172,7 +173,7 @@ export class PsjReplServer {
 
     public async exec(cmd: string): Promise<any> {
         if (!this.connection) {
-            this.logFn({ level: LogLevel.Error, msg: "Not connected" });
+            this.logFn({ level: LogLevel.Error, msg: 'Not connected' });
             return undefined;
         }
 

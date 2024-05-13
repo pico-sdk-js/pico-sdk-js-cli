@@ -18,25 +18,35 @@ console.log(`Welcome to ${pkg.name} v${pkg.version}`);
 console.log(`>> ${pkg.description}\n`);
 console.log('Type ".help" for more information.');
 
-const logLevels: Record<string,LogLevel> = { 'error': LogLevel.Error, 'warning': LogLevel.Warning, 'debug': LogLevel.Debug, 'trace': LogLevel.Trace };
+const logLevels: Record<string, LogLevel> = {
+    error: LogLevel.Error,
+    warning: LogLevel.Warning,
+    debug: LogLevel.Debug,
+    trace: LogLevel.Trace
+};
 
 (async function () {
-    const args = yargs.strict()
+    const args = yargs
+        .strict()
         .option('log-level', {
             alias: 'll',
             type: 'string',
             choices: ['error', 'warning', 'debug', 'trace'],
             description: 'Sets the log level of the output',
             default: 'error'
-        }).option('auto-connect', {
+        })
+        .option('auto-connect', {
             alias: 'ac',
             type: 'boolean',
             description: 'Automatically connects on start'
-        }).option('local', {
+        })
+        .option('local', {
             alias: 'l',
             type: 'boolean',
-            description: 'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.',
-        }).parseSync();
+            description:
+                'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.'
+        })
+        .parseSync();
 
     const server = new PsjReplServer();
     server.setLogLevel(logLevels[args.logLevel]);

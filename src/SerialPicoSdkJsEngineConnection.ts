@@ -1,10 +1,9 @@
 import { SerialPort } from 'serialport';
-import { CommandRequest, CommandResponse, PicoSdkJsEngineConnection } from "./PicoSdkJsEngineConnection";
+import { CommandRequest, CommandResponse, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
 import { LogLevel } from './psjLogger';
 import assert from 'assert';
 
 export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
-
     serialPort: SerialPort | null = null;
     readonly decoder: TextDecoder = new TextDecoder();
 
@@ -18,9 +17,8 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
 
     public open(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            if (this.serialPort !== null)
-            {
-                reject("Connection already established");
+            if (this.serialPort !== null) {
+                reject('Connection already established');
                 return;
             }
 
@@ -28,9 +26,9 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
                 path: this.device,
                 baudRate: 115200,
                 dataBits: 8,
-                stopBits: 1, 
-                parity: "none",
-                rtsMode: "toggle",
+                stopBits: 1,
+                parity: 'none',
+                rtsMode: 'toggle',
                 autoOpen: false,
                 endOnClose: true
             });
@@ -57,7 +55,7 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
                 this.serialPort.on('data', (buffer) => {
                     const data = this.decoder.decode(buffer);
                     const responses = data.split('\r\n');
-                    responses.forEach(response => {
+                    responses.forEach((response) => {
                         if (response) {
                             this.processResponseString(response);
                         }
@@ -73,7 +71,7 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
 
     public async close(): Promise<void> {
         if (this.serialPort !== null) {
-            const quitCmd = new CommandRequest("quit");
+            const quitCmd = new CommandRequest('quit');
             await this.sendCommand(quitCmd);
 
             this.serialPort.close();
@@ -83,13 +81,13 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
 
     protected sendCommandBase(cmd: CommandRequest<{}>): void {
         assert(this.serialPort !== null);
-        
+
         this.serialPort.write(`${JSON.stringify(cmd)}\r`);
         this.serialPort.flush();
     }
 
     private onError(err: Error) {
-        this.log({ 
+        this.log({
             level: LogLevel.Error,
             msg: err.message
         });

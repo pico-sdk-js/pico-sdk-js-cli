@@ -1,17 +1,17 @@
-import { ChildProcessWithoutNullStreams, spawn } from "child_process";
-import path from "path";
-import { CommandRequest, PicoSdkJsEngineConnection } from "./PicoSdkJsEngineConnection";
-import { LogLevel } from "./psjLogger";
-import assert from "assert";
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import path from 'path';
+import { CommandRequest, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
+import { LogLevel } from './psjLogger';
+import assert from 'assert';
 
 export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
-	private readonly abortController = new AbortController();
-	private process: ChildProcessWithoutNullStreams | null = null;
-    private interval: NodeJS.Timeout|null = null;
-	
-	constructor(private readonly path: string) {
+    private readonly abortController = new AbortController();
+    private process: ChildProcessWithoutNullStreams | null = null;
+    private interval: NodeJS.Timeout | null = null;
+
+    constructor(private readonly path: string) {
         super();
-	}
+    }
 
     public isOpen(): boolean {
         return this.process !== null;
@@ -19,14 +19,13 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
 
     public open(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            if (this.process !== null)
-            {
-                reject("Process already running");
+            if (this.process !== null) {
+                reject('Process already running');
                 return;
             }
 
             const cwd = path.dirname(this.path);
-            const procPath = "./" + path.basename(this.path);
+            const procPath = './' + path.basename(this.path);
 
             const childprocess = spawn(procPath, ['--echo_off'], {
                 shell: true,
@@ -35,11 +34,11 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
                 signal: this.abortController.signal
             });
 
-            childprocess.once("spawn", () => {
+            childprocess.once('spawn', () => {
                 let carryover = '';
 
                 this.process = childprocess;
-                
+
                 childprocess.stdout.setEncoding('utf8');
 
                 childprocess.stdout.on('data', (data: string) => {
@@ -52,47 +51,46 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
                         carryover = '';
                     }
 
-                    responses.forEach(response => {
+                    responses.forEach((response) => {
                         if (response) {
                             this.processResponseString(response);
                         }
                     });
                 });
 
-                childprocess.on("exit", (code) => {
+                childprocess.on('exit', (code) => {
                     if (this.interval) {
                         clearInterval(this.interval);
                         this.interval = null;
                     }
 
                     this.log({
-                        level: (code === 0 ? LogLevel.Trace : LogLevel.Error),
+                        level: code === 0 ? LogLevel.Trace : LogLevel.Error,
                         msg: `Process exited with code ${code}`
                     });
 
                     this.process = null;
                 });
-                
+
                 this.interval = setInterval(() => {
                     childprocess.stdout.read();
                 }, 1000);
 
                 resolve();
             });
-
         });
-	}
+    }
 
-	public async close(): Promise<void> {
+    public async close(): Promise<void> {
         if (this.process !== null) {
-            const quitCmd = new CommandRequest("quit");
+            const quitCmd = new CommandRequest('quit');
             await this.sendCommand(quitCmd);
         }
     }
 
     protected sendCommandBase(cmd: CommandRequest<{}>) {
         assert(this.process !== null);
-        
+
         this.process.stdin.write(`${JSON.stringify(cmd)}\n`);
     }
 }

@@ -1,41 +1,48 @@
-import Yargs from "yargs/yargs";
-import { PsjReplServer } from "../psjReplServer";
+import Yargs from 'yargs/yargs';
+import { PsjReplServer } from '../psjReplServer';
 import fs from 'fs';
 import path from 'path';
-import { WriteCommandOptions } from "../PicoSdkJsEngineConnection";
-import { alias } from "yargs";
+import { WriteCommandOptions } from '../PicoSdkJsEngineConnection';
+import { alias } from 'yargs';
 
 export async function writeCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command("* <remote-path>", "Write a file to the connected device")
-        .usage(".write <remote-path>")
-        .positional("remote-path", {
+        .command('* <remote-path>', 'Write a file to the connected device')
+        .usage('.write <remote-path>')
+        .positional('remote-path', {
             alias: 'r',
             type: 'string',
             description: 'The name to save as on the Pico device',
             normalize: true,
             demandOption: true
-        }).options({
-            "local-path": {
+        })
+        .options({
+            'local-path': {
                 alias: 'p',
                 type: 'string',
                 description: 'The local file to write to the Pico device',
                 normalize: true
             },
-            "content": {
+            content: {
                 alias: 'c',
                 type: 'string',
                 description: 'The contents of a file to write to the Pico device',
                 conflicts: ['local-path']
             }
-        }).fail((msg: string, err: Error) => {
+        })
+        .fail((msg: string, err: Error) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
-        }).strict().exitProcess(false);
+        })
+        .strict()
+        .exitProcess(false);
 
-    yargs.example('.write file.js --local-path ./myFile.js', 'write the local "myFile.js" to the Pico with the file name "file.js".');
+    yargs.example(
+        '.write file.js --local-path ./myFile.js',
+        'write the local "myFile.js" to the Pico with the file name "file.js".'
+    );
     yargs.example('.write file.js', 'write the local "file.js" to the Pico with the file name "file.js".');
 
     const args = await yargs.parseAsync();
@@ -46,13 +53,15 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error("Not connected, run .connect to connect to a device running Pico-Sdk-JS.");
+        throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
     }
 
     const destName = args.remotePath;
     const srcName = args.content
-                        ? "static content"
-                        : (args.localPath ? path.resolve(args.localPath) : path.resolve(args.remotePath));
+        ? 'static content'
+        : args.localPath
+          ? path.resolve(args.localPath)
+          : path.resolve(args.remotePath);
     const contents = args.content ?? new TextDecoder().decode(fs.readFileSync(srcName));
     const pageSize = 1024;
     const pages = Math.ceil(contents.length / pageSize);
@@ -73,4 +82,3 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
 
     console.log('%d bytes written', bytesWritten);
 }
-
