@@ -7,12 +7,12 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Local",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/index.js",
-            "args": ["--log-level=trace"],
+            "args": ["--auto-connect", "--local"],
             "preLaunchTask": "npm: build",
             "console": "integratedTerminal",
             "outFiles": [

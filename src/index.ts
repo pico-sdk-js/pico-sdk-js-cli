@@ -8,6 +8,7 @@
  */
 
 import pkg from '../package.json';
+import { connectToPico } from './commands/connectCommand';
 import { LogLevel } from './psjLogger';
 import { PsjReplServer } from './psjReplServer';
 import * as yargs from 'yargs';
@@ -41,7 +42,7 @@ const logLevels: Record<string,LogLevel> = { 'error': LogLevel.Error, 'warning':
     server.setLogLevel(logLevels[args.logLevel]);
 
     if (args.autoConnect) {
-        await server.connectToPico(args.local ? '--local' : '');
+        await connectToPico(server, args.local ? '--local' : '');
     }
 
     server.start();

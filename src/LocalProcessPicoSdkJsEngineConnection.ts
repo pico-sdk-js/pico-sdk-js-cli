@@ -36,12 +36,22 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
             });
 
             childprocess.once("spawn", () => {
+                let carryover = '';
+
                 this.process = childprocess;
                 
                 childprocess.stdout.setEncoding('utf8');
 
                 childprocess.stdout.on('data', (data: string) => {
-                    const responses = data.split('\n');
+                    data = carryover + data;
+                    const responses: string[] = data.split('\n');
+
+                    if (responses.length > 0 && data[data.length - 1] !== '\n') {
+                        carryover = responses.pop() as string;
+                    } else {
+                        carryover = '';
+                    }
+
                     responses.forEach(response => {
                         if (response) {
                             this.processResponseString(response);

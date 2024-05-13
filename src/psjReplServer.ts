@@ -1,18 +1,39 @@
 import repl, { REPLServer } from 'repl';
 import { Context } from 'vm';
-import Yargs from 'yargs/yargs';
-import { LocalProcessPicoSdkJsEngineConnection } from './LocalProcessPicoSdkJsEngineConnection';
 import { CommandError, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
 import { LogLevel, LogMessage, logger } from './psjLogger';
-import { SerialPicoSdkJsEngineConnection } from './SerialPicoSdkJsEngineConnection';
+import { connectToPico } from './commands/connectCommand';
+import { disconnectFromPico } from './commands/disconnectCommand';
+import { lsCommand } from './commands/lsCommand';
+import { statsCommand } from './commands/statsCommand';
+import { writeCommand } from './commands/writeCommand';
+import { readCommand } from './commands/readCommand';
+import { deleteCommand } from './commands/deleteCommand';
+import { formatCommand } from './commands/formatCommand';
 
 export class PsjReplServer {
-    private connection?: PicoSdkJsEngineConnection;
+    private connection: PicoSdkJsEngineConnection | null = null;
     private maxLogLevel: LogLevel = LogLevel.Error;
-    private server?: REPLServer;
+    private server: REPLServer | null = null;
     private commandInProgress: boolean = false;
-    
+
     constructor() {
+    }
+
+    public getConnection(): PicoSdkJsEngineConnection | null {
+        return this.connection;
+    }
+
+    public setConnection(connection: PicoSdkJsEngineConnection | null): void {
+        if (this.connection) {
+            this.connection.log = () => {};
+            this.connection = null;
+        }
+
+        if (connection) {
+            this.connection = connection;
+            this.connection.log = (m) => { this.logFn(m) };
+        }
     }
 
     public start() {
@@ -26,8 +47,8 @@ export class PsjReplServer {
     
         this.server.on("exit", async () => {
             const closePromise = this.connection?.close();
-            this.server = undefined;
-            this.connection = undefined;
+            this.server = null;
+            this.connection = null;
             
             await closePromise;
         });
@@ -36,13 +57,43 @@ export class PsjReplServer {
     
         this.server.defineCommand("connect", {
             help: "Connect to a Pico running Pico-Sdk-JS",
-            action: (text: string) => this.wrapCommand(() => this.connectToPico(text))
+            action: (text: string) => this.wrapCommand(() => connectToPico(this, text))
         });
     
         this.server.defineCommand("disconnect", {
-            help: "Disconnect a Pico running Pico-sdk-JS",
-            action: (text: string) => this.wrapCommand(() => this.disconnectFromPico())
+            help: "Disconnect a Pico running Pico-Sdk-JS",
+            action: (_text: string) => this.wrapCommand(() => disconnectFromPico(this))
         });
+
+        this.server.defineCommand("stats", {
+            help: "Get information on the connected device",
+            action: (text: string) => this.wrapCommand(() => statsCommand(this, text))
+        });
+
+        this.server.defineCommand("ls", {
+            help: "List files stored on the connected device",
+            action: (text: string) => this.wrapCommand(() => lsCommand(this, text))
+        });
+
+        this.server.defineCommand("write", {
+            help: "Write a local file to the connected device",
+            action: (text: string) => this.wrapCommand(() => writeCommand(this, text))
+        });        
+
+        this.server.defineCommand("read", {
+            help: "Read a file on the connected device",
+            action: (text: string) => this.wrapCommand(() => readCommand(this, text))
+        });        
+
+        this.server.defineCommand("delete", {
+            help: "Delete a file on the connected device",
+            action: (text: string) => this.wrapCommand(() => deleteCommand(this, text))
+        });        
+
+        this.server.defineCommand("format", {
+            help: "Delete all files and reformat the connected device",
+            action: (text: string) => this.wrapCommand(() => formatCommand(this, text))
+        });        
     }
 
     public setLogLevel(level: LogLevel) {
@@ -61,8 +112,8 @@ export class PsjReplServer {
 
     private async remoteEval(
         evalCmd: string,
-        context: Context,
-        file: string,
+        _context: Context,
+        _file: string,
         cb: (err: Error | null, result: any) => void
     ): Promise<void> {
         try {
@@ -131,70 +182,5 @@ export class PsjReplServer {
         }
 
         return response.value;
-    }
-
-    public async connectToPico(text: string): Promise<void> {
-        let failed = false;
-        const yargs = Yargs(text).options({
-            local: {
-                alias: 'l',
-                type: 'boolean',
-                description: 'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.',
-                hidden: true
-            },
-            device: {
-                alias: 'D',
-                type: 'string',
-                description: 'The device name to connect to.',
-                // default: '/dev/ttyACM0'
-            }
-        }).fail((msg: string, err: Error) => {
-            failed = true;
-            console.error(msg);
-            yargs.showHelp();
-        }).strict().exitProcess(false);
-
-
-        yargs.conflicts('local', 'device');
-
-        yargs.example('.connect --device /dev/ttyACM0', 'connect to the "/dev/ttyACM0" device.');
-
-        const args = await yargs.parseAsync();
-
-        if (failed || args.help || args.version) {
-            return;
-        }
-
-        if (this.connection) {
-            throw new Error("Already connected, run .disconnect close current connection first");
-        }
-
-        console.log("Connecting ... ");
-
-        if (args.local) {
-            const localPath = process.env.PSJ_LOCAL;
-            if (!localPath) {
-                throw new Error("Local path not defined. Must set environment variable 'PSJ_LOCAL' to the path of the pico-sdk-js executable.");
-            }
-
-            console.log('Connecting to local process at %s', localPath);
-            this.connection = new LocalProcessPicoSdkJsEngineConnection(localPath);
-            this.connection.log = (msg) => this.logFn(msg);
-            await this.connection.open();
-        } else {
-            const device = args.device ?? '/dev/ttyACM0';
-            console.log('Connecting to serial device at %s', device);
-            this.connection = new SerialPicoSdkJsEngineConnection(device);
-            this.connection.log = (msg) => this.logFn(msg);
-            await this.connection.open();
-        }
-    }
-
-    private async disconnectFromPico(): Promise<void> {
-        if (this.connection) {
-            console.log("Disconnecting ... ");
-            await this.connection.close();
-            this.connection = undefined;
-        }
     }
 }

@@ -6,8 +6,9 @@ export class CommandRequest<T = {}> {
     public etag: number = randomInt(0, 0xFFFFFFFF);
     public args: T|null = null;
 
-    constructor(cmd: string) {
+    constructor(cmd: string, args?: T) {
         this.cmd = cmd;
+        this.args = args ?? null;
     }
 }
 
@@ -27,6 +28,26 @@ interface CommandResponseHandler {
     resolve: (value: CommandResponse | PromiseLike<CommandResponse>) => void, 
     reject: (reason?: any) => void
 };
+
+export interface WriteCommandOptions {
+    path: string;
+    content: string;
+    mode: "create" | "append" | undefined;
+}
+
+export interface ReadCommandOptions {
+    path: string;
+    seg: number;
+}
+
+export interface DeleteCommandOptions {
+    path: string;
+}
+
+export interface LsCommandResponse extends CommandResponse<{ name: string; size: number; }[]> {}
+export interface StatsCommandResponse extends CommandResponse<Record<string, any>> {}
+export interface WriteCommandResponse extends CommandResponse<{bytes: number}> {}
+export interface ReadCommandResponse extends CommandResponse<{size: number, seg: number, nSegs: number, content: string}> {}
 
 export abstract class PicoSdkJsEngineConnection {
 
@@ -66,6 +87,36 @@ export abstract class PicoSdkJsEngineConnection {
     public reset(): Promise<CommandResponse> {
         let resetCmd = new CommandRequest("reset");
         return this.sendCommand(resetCmd);
+    }
+
+    public ls(): Promise<LsCommandResponse> {
+        let lsCmd = new CommandRequest("ls");
+        return this.sendCommand(lsCmd);
+    }
+
+    public read(options: ReadCommandOptions): Promise<ReadCommandResponse> {
+        let cmd = new CommandRequest("read", options);
+        return this.sendCommand(cmd);
+    }
+
+    public write(options: WriteCommandOptions): Promise<WriteCommandResponse> {
+        let cmd = new CommandRequest("write", options);
+        return this.sendCommand(cmd);
+    }
+
+    public delete(options: DeleteCommandOptions): Promise<CommandResponse> {
+        let cmd = new CommandRequest("delete", options);
+        return this.sendCommand(cmd);
+    }
+
+    public format(): Promise<CommandResponse> {
+        let cmd = new CommandRequest("format");
+        return this.sendCommand(cmd);
+    }
+
+    public stats(): Promise<StatsCommandResponse> {
+        let cmd = new CommandRequest("stats");
+        return this.sendCommand(cmd);
     }
 
     protected processResponseString(response: string): void {
