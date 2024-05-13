@@ -1,8 +1,6 @@
 import Yargs from 'yargs/yargs';
 import { PsjReplServer } from '../psjReplServer';
-import fs from 'fs';
-import path from 'path';
-import { DeleteCommandOptions, ReadCommandOptions } from '../PicoSdkJsEngineConnection';
+import { DeleteCommandOptions } from '../PicoSdkJsEngineConnection';
 
 export async function deleteCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
@@ -16,7 +14,7 @@ export async function deleteCommand(replServer: PsjReplServer, text: string): Pr
             normalize: true,
             demandOption: true
         })
-        .fail((msg: string, err: Error) => {
+        .fail((msg: string) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
@@ -43,7 +41,7 @@ export async function deleteCommand(replServer: PsjReplServer, text: string): Pr
         path: srcName
     };
 
-    const { value } = await connection.delete(options);
+    await connection.delete(options);
 
     console.log('Deleted "%s"', srcName);
 }

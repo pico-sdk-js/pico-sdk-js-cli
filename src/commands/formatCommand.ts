@@ -1,6 +1,5 @@
 import Yargs from 'yargs/yargs';
 import { PsjReplServer } from '../psjReplServer';
-import * as readline from 'readline/promises';
 
 export async function formatCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
@@ -15,7 +14,7 @@ export async function formatCommand(replServer: PsjReplServer, text: string): Pr
                 demandOption: true
             }
         })
-        .fail((msg: string, err: Error) => {
+        .fail((msg: string) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
@@ -23,10 +22,7 @@ export async function formatCommand(replServer: PsjReplServer, text: string): Pr
         .strict()
         .exitProcess(false);
 
-    yargs.example(
-        '.format --confirm',
-        'delete all files and reformats the attached device without additional confirmation.'
-    );
+    yargs.example('.format --confirm', 'delete all files and reformats the attached device without additional confirmation.');
 
     const args = await yargs.parseAsync();
 

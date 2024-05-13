@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { PsjReplServer } from '../psjReplServer';
 
-export async function statsCommand(replServer: PsjReplServer, text: string): Promise<void> {
+export async function statsCommand(replServer: PsjReplServer): Promise<void> {
     const connection = replServer.getConnection();
     if (!connection) {
         throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');

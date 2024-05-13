@@ -3,7 +3,6 @@ import { PsjReplServer } from '../psjReplServer';
 import fs from 'fs';
 import path from 'path';
 import { WriteCommandOptions } from '../PicoSdkJsEngineConnection';
-import { alias } from 'yargs';
 
 export async function writeCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
@@ -31,7 +30,7 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
                 conflicts: ['local-path']
             }
         })
-        .fail((msg: string, err: Error) => {
+        .fail((msg: string) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
@@ -39,10 +38,7 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
         .strict()
         .exitProcess(false);
 
-    yargs.example(
-        '.write file.js --local-path ./myFile.js',
-        'write the local "myFile.js" to the Pico with the file name "file.js".'
-    );
+    yargs.example('.write file.js --local-path ./myFile.js', 'write the local "myFile.js" to the Pico with the file name "file.js".');
     yargs.example('.write file.js', 'write the local "file.js" to the Pico with the file name "file.js".');
 
     const args = await yargs.parseAsync();
@@ -57,11 +53,7 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
     }
 
     const destName = args.remotePath;
-    const srcName = args.content
-        ? 'static content'
-        : args.localPath
-          ? path.resolve(args.localPath)
-          : path.resolve(args.remotePath);
+    const srcName = args.content ? 'static content' : args.localPath ? path.resolve(args.localPath) : path.resolve(args.remotePath);
     const contents = args.content ?? new TextDecoder().decode(fs.readFileSync(srcName));
     const pageSize = 1024;
     const pages = Math.ceil(contents.length / pageSize);

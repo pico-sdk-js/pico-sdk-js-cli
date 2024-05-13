@@ -15,7 +15,7 @@ export class PsjReplServer {
     private connection: PicoSdkJsEngineConnection | null = null;
     private maxLogLevel: LogLevel = LogLevel.Error;
     private server: REPLServer | null = null;
-    private commandInProgress: boolean = false;
+    private commandInProgress = false;
 
     constructor() {}
 
@@ -39,7 +39,7 @@ export class PsjReplServer {
 
     public start() {
         this.server = repl.start({
-            eval: (evalCmd: string, context: Context, file: string, cb: (err: Error | null, result: any) => void) => {
+            eval: (evalCmd: string, context: Context, file: string, cb: (err: Error | null, result: unknown) => void) => {
                 this.remoteEval(evalCmd, context, file, cb);
             },
             preview: false,
@@ -63,17 +63,17 @@ export class PsjReplServer {
 
         this.server.defineCommand('disconnect', {
             help: 'Disconnect a Pico running Pico-Sdk-JS',
-            action: (_text: string) => this.wrapCommand(() => disconnectFromPico(this))
+            action: () => this.wrapCommand(() => disconnectFromPico(this))
         });
 
         this.server.defineCommand('stats', {
             help: 'Get information on the connected device',
-            action: (text: string) => this.wrapCommand(() => statsCommand(this, text))
+            action: () => this.wrapCommand(() => statsCommand(this))
         });
 
         this.server.defineCommand('ls', {
             help: 'List files stored on the connected device',
-            action: (text: string) => this.wrapCommand(() => lsCommand(this, text))
+            action: () => this.wrapCommand(() => lsCommand(this))
         });
 
         this.server.defineCommand('write', {
@@ -111,12 +111,7 @@ export class PsjReplServer {
         }
     }
 
-    private async remoteEval(
-        evalCmd: string,
-        _context: Context,
-        _file: string,
-        cb: (err: Error | null, result: any) => void
-    ): Promise<void> {
+    private async remoteEval(evalCmd: string, _context: Context, _file: string, cb: (err: Error | null, result: unknown) => void): Promise<void> {
         try {
             this.commandInProgress = true;
             const result = await this.exec(evalCmd);
@@ -157,27 +152,25 @@ export class PsjReplServer {
         }
     }
 
-    public async resetContextOnPico(): Promise<any> {
+    public async resetContextOnPico(): Promise<void> {
         if (!this.connection) {
             this.logFn({ level: LogLevel.Error, msg: 'Not connected' });
             return undefined;
         }
 
-        var response = await this.connection.reset();
+        const response = await this.connection.reset();
         if (response.value instanceof Error) {
             throw response.value;
         }
-
-        return response.value;
     }
 
-    public async exec(cmd: string): Promise<any> {
+    public async exec(cmd: string): Promise<unknown> {
         if (!this.connection) {
             this.logFn({ level: LogLevel.Error, msg: 'Not connected' });
             return undefined;
         }
 
-        var response = await this.connection.exec(cmd);
+        const response = await this.connection.exec(cmd);
         if (response.value instanceof Error) {
             throw response.value;
         }

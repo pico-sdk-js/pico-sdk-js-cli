@@ -1,7 +1,6 @@
-import { CommandRequest, CommandResponse } from '../PicoSdkJsEngineConnection';
 import { PsjReplServer } from '../psjReplServer';
 
-export async function lsCommand(replServer: PsjReplServer, text: string): Promise<void> {
+export async function lsCommand(replServer: PsjReplServer): Promise<void> {
     const connection = replServer.getConnection();
     if (!connection) {
         throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');

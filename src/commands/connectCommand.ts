@@ -11,8 +11,7 @@ export async function connectToPico(replServer: PsjReplServer, text: string): Pr
             local: {
                 alias: 'l',
                 type: 'boolean',
-                description:
-                    'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.',
+                description: 'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.',
                 hidden: true
             },
             device: {
@@ -22,7 +21,7 @@ export async function connectToPico(replServer: PsjReplServer, text: string): Pr
                 // default: '/dev/ttyACM0'
             }
         })
-        .fail((msg: string, err: Error) => {
+        .fail((msg: string) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
@@ -50,9 +49,7 @@ export async function connectToPico(replServer: PsjReplServer, text: string): Pr
     if (args.local) {
         const localPath = process.env.PSJ_LOCAL;
         if (!localPath) {
-            throw new Error(
-                "Local path not defined. Must set environment variable 'PSJ_LOCAL' to the path of the pico-sdk-js executable."
-            );
+            throw new Error("Local path not defined. Must set environment variable 'PSJ_LOCAL' to the path of the pico-sdk-js executable.");
         }
 
         console.log('Connecting to local process at %s', localPath);

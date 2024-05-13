@@ -1,7 +1,7 @@
 import { randomInt } from 'crypto';
 import { LogMessage } from './psjLogger';
 
-export class CommandRequest<T = {}> {
+export class CommandRequest<T = object> {
     public cmd: string;
     public etag: number = randomInt(0, 0xffffffff);
     public args: T | null = null;
@@ -12,7 +12,7 @@ export class CommandRequest<T = {}> {
     }
 }
 
-export interface CommandResponse<T = any> {
+export interface CommandResponse<T = object> {
     cmd: string;
     etag: number | undefined;
     value: T;
@@ -20,7 +20,7 @@ export interface CommandResponse<T = any> {
 
 export class CommandError extends Error {
     constructor(
-        public readonly code: number,
+        public readonly error: number,
         message: string
     ) {
         super(message);
@@ -29,7 +29,7 @@ export class CommandError extends Error {
 
 interface CommandResponseHandler {
     resolve: (value: CommandResponse | PromiseLike<CommandResponse>) => void;
-    reject: (reason?: any) => void;
+    reject: (reason?: unknown) => void;
 }
 
 export interface WriteCommandOptions {
@@ -47,11 +47,10 @@ export interface DeleteCommandOptions {
     path: string;
 }
 
-export interface LsCommandResponse extends CommandResponse<{ name: string; size: number }[]> {}
-export interface StatsCommandResponse extends CommandResponse<Record<string, any>> {}
-export interface WriteCommandResponse extends CommandResponse<{ bytes: number }> {}
-export interface ReadCommandResponse
-    extends CommandResponse<{ size: number; seg: number; nSegs: number; content: string }> {}
+export type LsCommandResponse = CommandResponse<{ name: string; size: number }[]>;
+export type StatsCommandResponse = CommandResponse<Record<string, object>>;
+export type WriteCommandResponse = CommandResponse<{ bytes: number }>;
+export type ReadCommandResponse = CommandResponse<{ size: number; seg: number; nSegs: number; content: string }>;
 
 export abstract class PicoSdkJsEngineConnection {
     private etags: Record<number, CommandResponseHandler> = {};
@@ -60,15 +59,19 @@ export abstract class PicoSdkJsEngineConnection {
     public abstract close(): Promise<void>;
     public abstract isOpen(): boolean;
 
-    protected sendCommand(cmd: CommandRequest): Promise<CommandResponse> {
-        return new Promise<CommandResponse>((resolve, reject) => {
+    protected sendCommand<T = CommandResponse>(cmd: CommandRequest): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
             if (!this.isOpen()) {
                 reject('Connection not open');
                 return;
             }
 
             this.etags[cmd.etag] = {
-                resolve: resolve,
+                /* eslint-disable-next-line @typescript-eslint/no-explicit-any --
+                 * Any is required below in order to allow conversions from CommandResponse<object> to
+                 * more specific CommandResponse types like LsCommandResponse.
+                 **/
+                resolve: resolve as any,
                 reject: reject
             };
 
@@ -78,46 +81,47 @@ export abstract class PicoSdkJsEngineConnection {
 
     protected abstract sendCommandBase(cmd: CommandRequest): void;
 
+    // eslint @typescript-eslint/no-empty-function: "ignore"
     public log: (log: LogMessage) => void = () => {};
 
     public exec(cmd: string): Promise<CommandResponse> {
-        let execCmd = new CommandRequest<{ code: string }>('exec');
+        const execCmd = new CommandRequest<{ code: string }>('exec');
         execCmd.args = { code: cmd };
         return this.sendCommand(execCmd);
     }
 
     public reset(): Promise<CommandResponse> {
-        let resetCmd = new CommandRequest('reset');
+        const resetCmd = new CommandRequest('reset');
         return this.sendCommand(resetCmd);
     }
 
     public ls(): Promise<LsCommandResponse> {
-        let lsCmd = new CommandRequest('ls');
-        return this.sendCommand(lsCmd);
+        const lsCmd = new CommandRequest('ls');
+        return this.sendCommand<LsCommandResponse>(lsCmd);
     }
 
     public read(options: ReadCommandOptions): Promise<ReadCommandResponse> {
-        let cmd = new CommandRequest('read', options);
+        const cmd = new CommandRequest('read', options);
         return this.sendCommand(cmd);
     }
 
     public write(options: WriteCommandOptions): Promise<WriteCommandResponse> {
-        let cmd = new CommandRequest('write', options);
+        const cmd = new CommandRequest('write', options);
         return this.sendCommand(cmd);
     }
 
     public delete(options: DeleteCommandOptions): Promise<CommandResponse> {
-        let cmd = new CommandRequest('delete', options);
+        const cmd = new CommandRequest('delete', options);
         return this.sendCommand(cmd);
     }
 
     public format(): Promise<CommandResponse> {
-        let cmd = new CommandRequest('format');
+        const cmd = new CommandRequest('format');
         return this.sendCommand(cmd);
     }
 
     public stats(): Promise<StatsCommandResponse> {
-        let cmd = new CommandRequest('stats');
+        const cmd = new CommandRequest('stats');
         return this.sendCommand(cmd);
     }
 
@@ -133,12 +137,17 @@ export abstract class PicoSdkJsEngineConnection {
 
         if (cmdResponse.etag) {
             const handler = this.etags[cmdResponse.etag];
-            delete this.etags[cmdResponse.etag];
 
             if (handler) {
-                if (cmdResponse.value?.error) {
-                    const errorResponse = new CommandError(cmdResponse.value?.error, cmdResponse.value?.message);
-                    handler.reject(errorResponse);
+                /* eslint-disable-next-line @typescript-eslint/no-dynamic-delete --
+                 * A delete is required here due to cmdResponse.etag being a dynamic value
+                 * and already confirmed to exist.
+                 **/
+                delete this.etags[cmdResponse.etag];
+
+                const cmdError = cmdResponse.value as CommandError;
+                if (cmdError?.error && cmdError?.message) {
+                    handler.reject(cmdError);
                 } else {
                     handler.resolve(cmdResponse);
                 }

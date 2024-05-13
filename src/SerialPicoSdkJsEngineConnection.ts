@@ -1,5 +1,5 @@
 import { SerialPort } from 'serialport';
-import { CommandRequest, CommandResponse, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
+import { CommandRequest, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
 import { LogLevel } from './psjLogger';
 import assert from 'assert';
 
@@ -79,7 +79,7 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
         }
     }
 
-    protected sendCommandBase(cmd: CommandRequest<{}>): void {
+    protected sendCommandBase(cmd: CommandRequest): void {
         assert(this.serialPort !== null);
 
         this.serialPort.write(`${JSON.stringify(cmd)}\r`);

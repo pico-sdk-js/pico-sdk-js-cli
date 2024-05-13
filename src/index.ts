@@ -43,8 +43,7 @@ const logLevels: Record<string, LogLevel> = {
         .option('local', {
             alias: 'l',
             type: 'boolean',
-            description:
-                'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.'
+            description: 'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.'
         })
         .parseSync();
 

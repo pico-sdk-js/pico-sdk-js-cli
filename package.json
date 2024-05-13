@@ -3,6 +3,7 @@
 	"description": "CLI for connecting to a Raspberry Pi Pico with the Pico-SDK-JS installed",
 	"version": "0.0.1",
 	"license": "GPL-3.0",
+	"type": "module",
 	"bin": {
 		"pico-sdk-js-cli": "dist/index.js",
 		"psj": "dist/index.js"
@@ -25,16 +26,19 @@
 	"scripts": {
 		"start": "npm run build && node dist/index.js",
 		"pack": "npm run build && npm run format-check && npm pack --pack-destination dist",
-		"build": "tsc --project tsconfig.json",
+		"build": "npx eslint ./src && tsc --project tsconfig.json",
 		"format": "prettier --write \"./src/**/*.{ts,js,json}\"",
 		"format-check": "prettier --check \"./src/**/*.{ts,js,json}\""
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.2.0",
 		"@types/minimist": "^1.2.5",
 		"@types/node": "^20.11.16",
 		"@types/yargs": "^17.0.32",
+		"eslint": "^8.57.0",
 		"prettier": "^3.2.5",
-		"typescript": "^5.3.3"
+		"typescript": "^5.4.5",
+		"typescript-eslint": "^7.9.0"
 	},
 	"dependencies": {
 		"chalk": "^4.1.2",

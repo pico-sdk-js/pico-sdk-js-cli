@@ -88,7 +88,7 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
         }
     }
 
-    protected sendCommandBase(cmd: CommandRequest<{}>) {
+    protected sendCommandBase(cmd: CommandRequest<object>) {
         assert(this.process !== null);
 
         this.process.stdin.write(`${JSON.stringify(cmd)}\n`);
