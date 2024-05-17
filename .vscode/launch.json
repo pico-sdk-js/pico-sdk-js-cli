@@ -22,6 +22,21 @@
                 // Update below path to local executable to connect to via ".connect --local"
                 "PSJ_LOCAL": "${workspaceFolder}/../pico-sdk-js/build/pico-sdk-js-0.0.1"
             }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch remote",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/dist/index.js",
+            "args": ["--auto-connect"],
+            "preLaunchTask": "npm: build",
+            "console": "integratedTerminal",
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js"
+            ]
         }
     ]
 }
