@@ -25,6 +25,13 @@ export class CommandError extends Error {
     ) {
         super(message);
     }
+
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any --
+     * Verifies if the value is of a particular type
+    **/
+    static isCommandError(obj: any): boolean {
+        return !!(obj?.error && obj?.message);
+    }
 }
 
 interface CommandResponseHandler {
@@ -90,9 +97,10 @@ export abstract class PicoSdkJsEngineConnection {
         return this.sendCommand(execCmd);
     }
 
-    public reset(): Promise<CommandResponse> {
-        const resetCmd = new CommandRequest('reset');
-        return this.sendCommand(resetCmd);
+    public restart(hard: boolean): Promise<CommandResponse> {
+        const restartCmd = new CommandRequest<{ hard: 0|1 }>('restart');
+        restartCmd.args = { hard : hard ? 1 : 0 };
+        return this.sendCommand(restartCmd);
     }
 
     public ls(): Promise<LsCommandResponse> {
@@ -145,9 +153,8 @@ export abstract class PicoSdkJsEngineConnection {
                  **/
                 delete this.etags[cmdResponse.etag];
 
-                const cmdError = cmdResponse.value as CommandError;
-                if (cmdError?.error && cmdError?.message) {
-                    handler.reject(cmdError);
+                if (CommandError.isCommandError(cmdResponse.value)) {
+                    handler.reject(cmdResponse.value);
                 } else {
                     handler.resolve(cmdResponse);
                 }

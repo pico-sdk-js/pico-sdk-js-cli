@@ -10,6 +10,7 @@ import { writeCommand } from './commands/writeCommand';
 import { readCommand } from './commands/readCommand';
 import { deleteCommand } from './commands/deleteCommand';
 import { formatCommand } from './commands/formatCommand';
+import { restartCommand } from './commands/restartCommand';
 
 export class PsjReplServer {
     private connection: PicoSdkJsEngineConnection | null = null;
@@ -54,7 +55,17 @@ export class PsjReplServer {
             await closePromise;
         });
 
-        this.server.on('reset', async () => this.wrapCommand(() => this.resetContextOnPico()));
+        this.server.on('reset', async () => this.wrapCommand(() => restartCommand(this, "")));
+
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any --
+         * Need to delete commands from ReadOnlyDict<>, so using any to enable
+        **/ 
+        const commands = this.server.commands as any;
+        delete commands.break;
+        delete commands.editor;
+        delete commands.load;
+        delete commands.save;
+        delete commands.clear;
 
         this.server.defineCommand('connect', {
             help: 'Connect to a Pico running Pico-Sdk-JS',
@@ -95,6 +106,11 @@ export class PsjReplServer {
             help: 'Delete all files and reformat the connected device',
             action: (text: string) => this.wrapCommand(() => formatCommand(this, text))
         });
+
+        this.server.defineCommand('restart', {
+            help: 'Clear the device context and restart the entry script',
+            action: (text: string) => this.wrapCommand(() => restartCommand(this, text))
+        });
     }
 
     public setLogLevel(level: LogLevel) {
@@ -117,8 +133,9 @@ export class PsjReplServer {
             const result = await this.exec(evalCmd);
             cb(null, result);
         } catch (error) {
-            if (error instanceof CommandError) {
-                logger.log({ level: LogLevel.Error, msg: error.message });
+            if (CommandError.isCommandError(error)) {
+                const cmdError = error as CommandError;
+                logger.log({ level: LogLevel.Error, msg: cmdError.message });
                 cb(null, undefined);
                 return;
             }
@@ -137,10 +154,9 @@ export class PsjReplServer {
         try {
             this.commandInProgress = true;
             await action();
-        } catch (error) {
-            let message: string;
-            if (error instanceof Error) message = error.message;
-            else message = String(error);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            const message: string = error?.message ?? String(error);
 
             this.logFn({
                 level: LogLevel.Error,
@@ -149,18 +165,6 @@ export class PsjReplServer {
         } finally {
             this.commandInProgress = false;
             this.server?.displayPrompt();
-        }
-    }
-
-    public async resetContextOnPico(): Promise<void> {
-        if (!this.connection) {
-            this.logFn({ level: LogLevel.Error, msg: 'Not connected' });
-            return undefined;
-        }
-
-        const response = await this.connection.reset();
-        if (response.value instanceof Error) {
-            throw response.value;
         }
     }
 
