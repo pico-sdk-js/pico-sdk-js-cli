@@ -1,0 +1,42 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Local",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/dist/index.js",
+            "args": ["--auto-connect", "--local"],
+            "preLaunchTask": "npm: build",
+            "console": "integratedTerminal",
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js"
+            ],
+            "env": {
+                // Update below path to local executable to connect to via ".connect --local"
+                "PSJ_LOCAL": "${workspaceFolder}/../pico-sdk-js/build/pico-sdk-js-0.0.1"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch remote",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/dist/index.js",
+            "args": [],
+            "preLaunchTask": "npm: build",
+            "console": "integratedTerminal",
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js"
+            ]
+        }
+    ]
+}
