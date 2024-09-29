@@ -28,7 +28,7 @@ export class CommandError extends Error {
 
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any --
      * Verifies if the value is of a particular type
-    **/
+     **/
     static isCommandError(obj: any): boolean {
         return !!(obj?.error && obj?.message);
     }
@@ -107,8 +107,8 @@ export abstract class PicoSdkJsEngineConnection {
     }
 
     public restart(hard: boolean): Promise<CommandResponse> {
-        const restartCmd = new CommandRequest<{ hard: 0|1 }>('restart');
-        restartCmd.args = { hard : hard ? 1 : 0 };
+        const restartCmd = new CommandRequest<{ hard: 0 | 1 }>('restart');
+        restartCmd.args = { hard: hard ? 1 : 0 };
         return this.sendCommand(restartCmd);
     }
 

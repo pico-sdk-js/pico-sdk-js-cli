@@ -57,11 +57,11 @@ export class PsjReplServer {
             await closePromise;
         });
 
-        this.server.on('reset', async () => this.wrapCommand(() => restartCommand(this, "")));
+        this.server.on('reset', async () => this.wrapCommand(() => restartCommand(this, '')));
 
         /* eslint-disable-next-line @typescript-eslint/no-explicit-any --
          * Need to delete commands from ReadOnlyDict<>, so using any to enable
-        **/ 
+         **/
         const commands = this.server.commands as any;
         delete commands.break;
         delete commands.editor;
@@ -166,7 +166,7 @@ export class PsjReplServer {
         try {
             this.commandInProgress = true;
             await action();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             const message: string = error?.message ?? String(error);
 

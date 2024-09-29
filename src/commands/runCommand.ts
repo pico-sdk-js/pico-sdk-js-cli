@@ -39,7 +39,7 @@ export async function runCommand(replServer: PsjReplServer, text: string): Promi
     console.log('Executing "%s"', srcName);
 
     const options: RunCommandOptions = {
-        path: srcName,
+        path: srcName
     };
 
     await connection.run(options);
