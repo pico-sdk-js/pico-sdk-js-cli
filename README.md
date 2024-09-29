@@ -15,6 +15,10 @@ Install pico-sdk-js-cli globally with npm
 
 Note that this CLI expects a [Raspberry Pi Pico-series Microcontroller](https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html) with the [pico-sdk-js](https://github.com/jt000/pico-sdk-js/) installed. For installation instructions, see [pico-sdk-js readme](https://github.com/jt000/pico-sdk-js?tab=readme-ov-file#pico-sdk-js).
 
+## Getting Started & Examples
+
+To get started quickly using the pico-sdk-js, try out [our examples](https://github.com/jt000/pico-sdk-js-examples/tree/main?tab=readme-ov-file#readme).
+
 ## Startup
 
 Start up the pico-sdk-js REPL by simply running
