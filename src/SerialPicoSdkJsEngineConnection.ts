@@ -43,6 +43,8 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
             });
 
             serialPort.on('open', () => {
+                let remainingData = '';
+
                 this.log({ level: LogLevel.Trace, msg: 'SRL: "open" Event' });
 
                 this.serialPort = serialPort;
@@ -53,8 +55,15 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
                 this.serialPort.on('error', (err: Error) => this.onError(err));
 
                 this.serialPort.on('data', (buffer) => {
-                    const data = this.decoder.decode(buffer);
+                    const data = remainingData + this.decoder.decode(buffer);
                     const responses = data.split('\r\n');
+
+                    if (!data.endsWith('\r\n')) {
+                        remainingData = responses.pop() ?? '';
+                    } else {
+                        remainingData = '';
+                    }
+
                     responses.forEach((response) => {
                         if (response) {
                             this.processResponseString(response);

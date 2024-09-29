@@ -50,6 +50,10 @@ export interface ReadCommandOptions {
     seg: number;
 }
 
+export interface RunCommandOptions {
+    path: string;
+}
+
 export interface DeleteCommandOptions {
     path: string;
 }
@@ -97,10 +101,20 @@ export abstract class PicoSdkJsEngineConnection {
         return this.sendCommand(execCmd);
     }
 
+    public run(options: RunCommandOptions): Promise<CommandResponse> {
+        const runCmd = new CommandRequest<RunCommandOptions>('run', options);
+        return this.sendCommand(runCmd);
+    }
+
     public restart(hard: boolean): Promise<CommandResponse> {
         const restartCmd = new CommandRequest<{ hard: 0|1 }>('restart');
         restartCmd.args = { hard : hard ? 1 : 0 };
         return this.sendCommand(restartCmd);
+    }
+
+    public kill(): Promise<CommandResponse> {
+        const cmd = new CommandRequest('kill');
+        return this.sendCommand(cmd);
     }
 
     public ls(): Promise<LsCommandResponse> {

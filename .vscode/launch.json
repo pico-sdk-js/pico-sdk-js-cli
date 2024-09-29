@@ -12,7 +12,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/index.js",
-            "args": ["--auto-connect", "--local", "--ll", "trace"],
+            "args": ["--auto-connect", "--local"],
             "preLaunchTask": "npm: build",
             "console": "integratedTerminal",
             "outFiles": [
@@ -31,7 +31,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/index.js",
-            "args": ["--auto-connect"],
+            "args": [],
             "preLaunchTask": "npm: build",
             "console": "integratedTerminal",
             "outFiles": [

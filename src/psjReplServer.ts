@@ -11,6 +11,8 @@ import { readCommand } from './commands/readCommand';
 import { deleteCommand } from './commands/deleteCommand';
 import { formatCommand } from './commands/formatCommand';
 import { restartCommand } from './commands/restartCommand';
+import { killCommand } from './commands/killCommand';
+import { runCommand } from './commands/runCommand';
 
 export class PsjReplServer {
     private connection: PicoSdkJsEngineConnection | null = null;
@@ -110,6 +112,16 @@ export class PsjReplServer {
         this.server.defineCommand('restart', {
             help: 'Clear the device context and restart the entry script',
             action: (text: string) => this.wrapCommand(() => restartCommand(this, text))
+        });
+
+        this.server.defineCommand('kill', {
+            help: 'Stops the script running on the device',
+            action: (text: string) => this.wrapCommand(() => killCommand(this, text))
+        });
+
+        this.server.defineCommand('run', {
+            help: 'Executes a file stored on the device',
+            action: (text: string) => this.wrapCommand(() => runCommand(this, text))
         });
     }
 
