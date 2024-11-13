@@ -1,9 +1,7 @@
-name: Build NPM Package
+name: CI Build
 
 on:
   workflow_dispatch:
-
-  push:
 
   pull_request:
     branches: [ "main" ]
