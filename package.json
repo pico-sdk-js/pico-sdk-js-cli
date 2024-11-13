@@ -1,5 +1,5 @@
 {
-	"name": "pico-sdk-js-cli",
+	"name": "@pico-sdk-js/cli",
 	"description": "CLI for connecting to a Raspberry Pi Pico with the Pico-SDK-JS installed",
 	"version": "0.0.0",
 	"license": "GPL-3.0",
@@ -7,9 +7,17 @@
 		"pico-sdk-js-cli": "dist/index.js",
 		"psj": "dist/index.js"
 	},
+	"homepage": "https://pico-sdk-js.github.io/",
 	"author": {
 		"name": "jt000",
 		"url": "https://www.github.com/jt000"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pico-sdk-js/pico-sdk-js-cli"
+	},
+	"bugs": {
+		"url": "https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/new?template=bug_report.md"
 	},
 	"keywords": [
 		"pico-sdk-js",
