@@ -37,9 +37,9 @@
 		"format": "prettier --write \"./src/**/*.{ts,js,json}\"",
 		"format-check": "prettier --check \"./src/**/*.{ts,js,json}\"",
 
-		"beachball:change": "beachball change --no-commit",
+		"beachball:change": "beachball change",
         "beachball:check": "beachball check",
-        "beachball:bump": "beachball bump"
+		"beachball:publish": "beachball publish"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.2.0",
