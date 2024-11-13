@@ -1,5 +1,5 @@
 {
-	"name": "pico-sdk-js-cli",
+	"name": "@pico-sdk-js/cli",
 	"description": "CLI for connecting to a Raspberry Pi Pico with the Pico-SDK-JS installed",
 	"version": "0.0.0",
 	"license": "GPL-3.0",
@@ -7,9 +7,17 @@
 		"pico-sdk-js-cli": "dist/index.js",
 		"psj": "dist/index.js"
 	},
+	"homepage": "https://pico-sdk-js.github.io/",
 	"author": {
 		"name": "jt000",
 		"url": "https://www.github.com/jt000"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pico-sdk-js/pico-sdk-js-cli.git"
+	},
+	"bugs": {
+		"url": "https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/new?template=bug_report.md"
 	},
 	"keywords": [
 		"pico-sdk-js",
@@ -24,14 +32,20 @@
 	],
 	"scripts": {
 		"start": "npm run build && node dist/index.js",
-		"pack": "npm run build && npm run format-check && npm pack --pack-destination dist",
+		
+		"pack": "npm run build && npm pack --pack-destination dist",
+
 		"build": "npx eslint ./src && tsc --project tsconfig.json",
+		"postbuild": "npm run format-check",
+		
+		"prepare": "npm run build",
+
 		"format": "prettier --write \"./src/**/*.{ts,js,json}\"",
 		"format-check": "prettier --check \"./src/**/*.{ts,js,json}\"",
 
-		"beachball:change": "beachball change --no-commit",
+		"beachball:change": "beachball change",
         "beachball:check": "beachball check",
-        "beachball:bump": "beachball bump"
+		"beachball:publish": "beachball publish"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.2.0",

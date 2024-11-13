@@ -1,0 +1,23 @@
+name: CI Build
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-node@v4.0.1
+
+    - name: Run npm ci Command
+      run: npm ci
+
+    - name: Check for changefiles
+      run: npm run beachball:check

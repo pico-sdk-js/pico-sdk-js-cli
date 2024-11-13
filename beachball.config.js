@@ -1,6 +1,7 @@
 module.exports = {
-    publish: false,
+    publish: true,
     branch: 'origin/main',
     changehint: 'Don\'t forget to run "npm run beachball:change" to create a change file',
-    generateChangelog: 'md'
+    generateChangelog: 'md',
+    gitTags: true
 };
