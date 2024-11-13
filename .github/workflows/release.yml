@@ -1,0 +1,31 @@
+name: Build NPM Package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # do initial pull of source w/o submodules to save time if npm install or beachball:check fails
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-node@v4.0.1
+
+    - name: Pull NPM Packages
+      run: npm install
+
+    - name: Create changelog & bump version
+      run: npm run beachball:publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build
+        path: |
+          dist/**
+          CHANGELOG.md
