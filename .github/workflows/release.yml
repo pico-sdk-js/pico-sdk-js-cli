@@ -13,12 +13,17 @@ jobs:
     - uses: actions/checkout@v3
 
     - uses: actions/setup-node@v4.0.1
+      with:
+        registry-url: 'https://registry.npmjs.org'
 
     - name: Pull NPM Packages
       run: npm install
 
     - name: Create changelog & bump version
-      run: npm run beachball:publish
+      run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          npm run beachball:publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
