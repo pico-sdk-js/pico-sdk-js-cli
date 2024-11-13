@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Adding npm registry and config settings",
-  "packageName": "@pico-sdk-js/cli",
-  "email": "jt000@users.noreply.github.com",
-  "dependentChangeType": "none"
-}
