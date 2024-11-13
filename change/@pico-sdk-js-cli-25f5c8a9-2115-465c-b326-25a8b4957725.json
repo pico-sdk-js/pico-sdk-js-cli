@@ -1,7 +1,7 @@
 {
   "type": "patch",
   "comment": "Initial CLI changes",
-  "packageName": "pico-sdk-js-cli",
+  "packageName": "@pico-sdk-js/cli",
   "email": "jt000@users.noreply.github.com",
   "dependentChangeType": "patch"
 }

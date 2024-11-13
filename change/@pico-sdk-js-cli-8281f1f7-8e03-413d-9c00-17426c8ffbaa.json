@@ -1,7 +1,7 @@
 {
   "type": "none",
-  "comment": "Adding examples to readme",
-  "packageName": "pico-sdk-js-cli",
+  "comment": "Adding workflow for building and publishing",
+  "packageName": "@pico-sdk-js/cli",
   "email": "jt000@users.noreply.github.com",
   "dependentChangeType": "none"
 }
