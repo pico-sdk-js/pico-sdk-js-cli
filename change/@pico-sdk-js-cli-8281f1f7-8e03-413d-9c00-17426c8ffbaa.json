@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Adding workflow for building and publishing",
-  "packageName": "@pico-sdk-js/cli",
-  "email": "jt000@users.noreply.github.com",
-  "dependentChangeType": "none"
-}

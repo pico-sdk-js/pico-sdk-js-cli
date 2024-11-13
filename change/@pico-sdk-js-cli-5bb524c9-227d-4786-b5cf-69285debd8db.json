@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Adding examples to readme",
+  "comment": "Bumping to version 0.0.1",
   "packageName": "@pico-sdk-js/cli",
   "email": "jt000@users.noreply.github.com",
   "dependentChangeType": "none"

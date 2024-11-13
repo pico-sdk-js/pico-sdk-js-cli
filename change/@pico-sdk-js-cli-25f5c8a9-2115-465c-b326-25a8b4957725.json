@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Initial @pico-sdk-js/cli rollout",
-  "packageName": "@pico-sdk-js/cli",
-  "email": "jt000@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
