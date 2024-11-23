@@ -9,3 +9,6 @@ dist/
 
 # VSCode related files #
 # .vscode
+
+# code coverage folder
+coverage/
