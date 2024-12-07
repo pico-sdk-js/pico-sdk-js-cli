@@ -15,7 +15,7 @@ export interface LogMessage {
 
 class PSJLogger {
     log(msg: LogMessage) {
-        process.stdout.clearLine(0);
+        // process.stdout.clearLine(0);
         console.log(this.getString(msg));
     }
 
