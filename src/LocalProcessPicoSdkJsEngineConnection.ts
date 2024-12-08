@@ -64,7 +64,7 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
                         this.interval = null;
                     }
 
-                    this.log({
+                    this.onLog({
                         level: code === 0 ? LogLevel.Trace : LogLevel.Error,
                         msg: `Process exited with code ${code}`
                     });
@@ -86,6 +86,8 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
             const quitCmd = new CommandRequest('quit');
             await this.sendCommand(quitCmd);
         }
+
+        this.onClose();
     }
 
     protected sendCommandBase(cmd: CommandRequest<object>) {

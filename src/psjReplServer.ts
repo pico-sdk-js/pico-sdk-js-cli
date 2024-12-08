@@ -28,14 +28,18 @@ export class PsjReplServer {
 
     public setConnection(connection: PicoSdkJsEngineConnection | null): void {
         if (this.connection) {
-            this.connection.log = () => {};
+            this.connection.onLog = () => {};
+            this.connection.onClose = () => {};
             this.connection = null;
         }
 
         if (connection) {
             this.connection = connection;
-            this.connection.log = (m) => {
+            this.connection.onLog = (m) => {
                 this.logFn(m);
+            };
+            this.connection.onClose = () => {
+                this.setConnection(null);
             };
         }
     }

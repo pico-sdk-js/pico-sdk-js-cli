@@ -3,6 +3,8 @@ import { CommandRequest, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConn
 import { LogLevel } from './psjLogger';
 import assert from 'assert';
 
+const errorRegex = /!#(?<error>[a-zA-Z0-9\-_]+)#!/;
+
 export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
     serialPort: SerialPort | null = null;
     readonly decoder: TextDecoder = new TextDecoder();
@@ -36,7 +38,7 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
             serialPort.setDefaultEncoding('utf-8');
             serialPort.on('error', (err: Error) => {
                 if (serialPort?.opening) {
-                    this.log({ level: LogLevel.Trace, msg: `SRL: ${err.message}` });
+                    this.onLog({ level: LogLevel.Trace, msg: `SRL: ${err.message}` });
                 } else {
                     reject(err);
                 }
@@ -45,18 +47,26 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
             serialPort.on('open', () => {
                 let remainingData = '';
 
-                this.log({ level: LogLevel.Trace, msg: 'SRL: "open" Event' });
+                this.onLog({ level: LogLevel.Trace, msg: 'SRL: "open" Event' });
 
                 this.serialPort = serialPort;
                 this.serialPort.removeAllListeners('error');
                 this.serialPort.removeAllListeners('open');
 
-                this.serialPort.on('close', () => this.onClose());
-                this.serialPort.on('error', (err: Error) => this.onError(err));
+                this.serialPort.on('close', () => this._onClose());
+                this.serialPort.on('error', (err: Error) => this._onError(err));
 
                 this.serialPort.on('data', (buffer) => {
                     const data = remainingData + this.decoder.decode(buffer);
+                    const commError = errorRegex.exec(data);
                     const responses = data.split('\r\n');
+
+                    if (commError?.groups?.error) {
+                        this.processError(commError?.groups.error);
+                        remainingData = '';
+                        this.close();
+                        return;
+                    }
 
                     if (!data.endsWith('\r\n')) {
                         remainingData = responses.pop() ?? '';
@@ -95,19 +105,21 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
         this.serialPort.flush();
     }
 
-    private onError(err: Error) {
-        this.log({
+    private _onError(err: Error) {
+        this.onLog({
             level: LogLevel.Error,
             msg: err.message
         });
         this.close();
     }
 
-    private onClose() {
-        this.log({
+    private _onClose() {
+        this.onLog({
             level: LogLevel.Trace,
             msg: 'Serial port closed'
         });
+
+        this.onClose();
 
         this.serialPort = null;
     }

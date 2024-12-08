@@ -93,7 +93,10 @@ export abstract class PicoSdkJsEngineConnection {
     protected abstract sendCommandBase(cmd: CommandRequest): void;
 
     // eslint @typescript-eslint/no-empty-function: "ignore"
-    public log: (log: LogMessage) => void = () => {};
+    public onLog: (log: LogMessage) => void = () => {};
+
+    // eslint @typescript-eslint/no-empty-function: "ignore"
+    public onClose: () => void = () => {};
 
     public exec(cmd: string): Promise<CommandResponse> {
         const execCmd = new CommandRequest<{ code: string }>('exec');
@@ -147,6 +150,21 @@ export abstract class PicoSdkJsEngineConnection {
         return this.sendCommand(cmd);
     }
 
+    protected processError(errorMsg: string): void {
+        for (const etag in this.etags) {
+            const handler = this.etags[etag];
+
+            if (handler) {
+                /* eslint-disable-next-line @typescript-eslint/no-dynamic-delete --
+                 * A delete is required here due to cmdResponse.etag being a dynamic value
+                 * and already confirmed to exist.
+                 **/
+                delete this.etags[etag];
+                handler.reject(`REMOTE ERROR: ${errorMsg}`);
+            }
+        }
+    }
+
     protected processResponseString(response: string): void {
         let cmdResponse: CommandResponse;
 
@@ -178,7 +196,7 @@ export abstract class PicoSdkJsEngineConnection {
         } else {
             if (cmdResponse.cmd === 'log') {
                 const logResponseValue = cmdResponse.value as LogMessage;
-                this.log(logResponseValue);
+                this.onLog(logResponseValue);
             }
         }
     }
