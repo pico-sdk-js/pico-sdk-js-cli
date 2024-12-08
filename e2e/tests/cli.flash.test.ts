@@ -28,7 +28,7 @@ describe('PSJ Flash Scenarios', () => {
         });
 
         xit.failing('is able to write a large file', async () => {
-            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/9
+            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/8
 
             // 10kb file
             const fileText = "1234567890".repeat(1024);
@@ -56,7 +56,7 @@ describe('PSJ Flash Scenarios', () => {
         });
         
         xit.failing('will error if file is larger than available space', async () => {
-            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/9
+            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/8
 
             // 1mb file
             const fileText = "a".repeat(1048576);
@@ -108,7 +108,7 @@ describe('PSJ Flash Scenarios', () => {
         });
 
         xit.failing('is able to read large existing file', async () => {
-            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/9
+            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/8
 
             // 10kb file
             const fileText = "1234567890".repeat(1024);
