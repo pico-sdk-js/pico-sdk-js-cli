@@ -23,10 +23,10 @@ A clear and concise description of what you expected to happen.
 A clear and concise description of what actually happened. PLEASE include a copy of the output or a screenshot.
 
 **Device Type:**
- - Pico Version: [e.g. W\WH]
+ - Pico Version: [e.g. 2040W, 2350, etc]
  - Device running PSJ: [e.g. Windows 11]
- - PSJ Version [e.g. 0.0.1]
- - Pico-Sdk-JS Version [e.g. 0.0.1]
+ - PSJ Version: [e.g. 0.0.1]
+ - Pico-Sdk-JS Version: [e.g. 0.0.1]
 
 **Additional context**
 Add any other context about the problem here.
