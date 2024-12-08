@@ -9,7 +9,7 @@ describe('PSJ Connection Scenarios', () => {
                 await runner()
                     .fork('../dist/index.js', ['--help'], {})
                     .stdout(/^Welcome to @pico-sdk-js\/cli v([0-9]+\.[0-9]+\.[0-9]+)/)
-                    .stdout(/>> CLI for connecting to a Raspberry Pi Pico with the Pico-SDK-JS installed/)
+                    .stdout('>> CLI for connecting to a Raspberry Pi Pico with the Pico-SDK-JS installed')
                     .code(0);
             });
         });
@@ -18,8 +18,8 @@ describe('PSJ Connection Scenarios', () => {
             it('connects to /dev/ttyACM0', async () => {
                 await runner()
                     .fork('../dist/index.js', ['--auto-connect'], {})
-                    .stdout(/Connecting to serial device at \/dev\/ttyACM0/)
-                    .stdin(/>/, '.exit')
+                    .stdout('Connecting to serial device at /dev/ttyACM0')
+                    .stdin('>', '.exit')
                     .code(0);
             });
         });
@@ -29,7 +29,7 @@ describe('PSJ Connection Scenarios', () => {
         it('in REPL quits process', async () => {
             await runner()
                 .fork('../dist/index.js', [], {})
-                .stdin(/>/, '.exit')
+                .stdin('>', '.exit')
                 .code(0);
         });
     });
@@ -38,9 +38,9 @@ describe('PSJ Connection Scenarios', () => {
         it('shows error when not connected', async () => {
             await runner()
                 .fork('../dist/index.js', [], {})
-                .stdin(/>/, '.ls')
-                .stdout(/Not connected/)
-                .stdin(/>/, '.exit')
+                .stdin('>', '.ls')
+                .stdout('Not connected')
+                .stdin('>', '.exit')
                 .code(0);
         });
     });
@@ -49,10 +49,22 @@ describe('PSJ Connection Scenarios', () => {
         it('connects to /dev/ttyACM0', async () => {
             await runner()
                 .fork('../dist/index.js', [], {})
-                .stdin(/>/, '.connect')
-                .stdout(/Connecting to serial device at \/dev\/ttyACM0/)
-                .stdin(/>/, '.exit')
+                .stdin('>', '.connect')
+                .stdout('Connecting to serial device at /dev/ttyACM0')
+                .stdin('>', '.exit')
                 .code(0);
+        });
+
+        it('connection failure allows reconnect', async () => {
+            await runner()
+                .fork('../dist/index.js', [], {})
+                .stdin('>', '.connect -D /dev/ttyACM99')
+                .stdout('Error: No such file or directory, cannot open /dev/ttyACM99')
+                .stdin('>', '.connect')
+                .stdout('Connecting to serial device at /dev/ttyACM0')
+                .stdin('>', '.exit')
+                .code(0);
+
         });
     });
 
@@ -61,9 +73,9 @@ describe('PSJ Connection Scenarios', () => {
         it('disconnects from /dev/ttyACM0', async () => {
             await runner()
                 .fork('../dist/index.js', ['--auto-connect'], {})
-                .stdin(/>/, '.disconnect')
-                .stdout(/Disconnecting .../)
-                .stdin(/>/, '.exit')
+                .stdin('>', '.disconnect')
+                .stdout('Disconnecting ...')
+                .stdin('>', '.exit')
                 .code(0);
         });
     });

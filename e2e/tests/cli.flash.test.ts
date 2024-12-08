@@ -7,8 +7,8 @@ describe('PSJ Flash Scenarios', () => {
         // Clear flash ram to start from scratch
         await runner()
         .fork('../dist/index.js', ['--auto-connect'], {})
-        .stdin(/>/, '.format --confirm')
-        .stdin(/>/, '.exit')
+        .stdin('>', '.format --confirm')
+        .stdin('>', '.exit')
         .code(0);
     });
 
@@ -20,10 +20,10 @@ describe('PSJ Flash Scenarios', () => {
 
             await runner()
             .fork('../dist/index.js', ['--auto-connect'], {})
-            .stdin(/>/, `.write test1.txt --content "${fileText}"`)
+            .stdin('>', `.write test1.txt --content "${fileText}"`)
             .stdout('Writing "static content" to "test1.txt"')
             .stdout('10 bytes written')
-            .stdin(/>/, '.exit')
+            .stdin('>', '.exit')
             .code(0);
         });
 
@@ -35,22 +35,22 @@ describe('PSJ Flash Scenarios', () => {
 
             await runner()
             .fork('../dist/index.js', ['--auto-connect'], {})
-            .stdin(/>/, `.write test2.txt --content "${fileText}"`)
+            .stdin('>', `.write test2.txt --content "${fileText}"`)
             .stdout('Writing "static content" to "test1.txt"')
             .stdout('10240 bytes written')
-            .stdin(/>/, '.exit')
+            .stdin('>', '.exit')
             .code(0);
         });
 
         it('will clobber existing file', async () => {
             await runner()
             .fork('../dist/index.js', ['--auto-connect'], {})
-            .stdin(/>/, `.write test1.txt --content "1234567890"`)
-            .stdin(/>/, `.write test1.txt --content "abcdefghij"`)
-            .stdin(/>/, '.read test1.txt')
+            .stdin('>', `.write test1.txt --content "1234567890"`)
+            .stdin('>', `.write test1.txt --content "abcdefghij"`)
+            .stdin('>', '.read test1.txt')
             .stdout("abcdefghij")
             .stdout("10 bytes (1 segments) read")
-            .stdin(/>/, '.exit')
+            .stdin('>', '.exit')
             .code(0);
 
         });
@@ -63,9 +63,9 @@ describe('PSJ Flash Scenarios', () => {
 
             await runner()
             .fork('../dist/index.js', ['--auto-connect'], {})
-            .stdin(/>/, `.write test2.txt --content "${fileText}"`)
+            .stdin('>', `.write test2.txt --content "${fileText}"`)
             .stdout("ERR: Error opening 'dir/foo.txt' for write: -28")
-            .stdin(/>/, '.exit')
+            .stdin('>', '.exit')
             .code(0);
         });
         
@@ -74,18 +74,18 @@ describe('PSJ Flash Scenarios', () => {
 
             await runner()
             .fork('../dist/index.js', ['--auto-connect'], {})
-            .stdin(/>/, `.write .hidden.txt --content "1234567890"`)
+            .stdin('>', `.write .hidden.txt --content "1234567890"`)
             .stdout("ERR: Permission denied")
-            .stdin(/>/, '.exit')
+            .stdin('>', '.exit')
             .code(0);
         });
 
         it('cannot write a file to a subdirectory', async () => {
             await runner()
             .fork('../dist/index.js', ['--auto-connect'], {})
-            .stdin(/>/, `.write ./dir/foo.txt --content "1234567890"`)
+            .stdin('>', `.write ./dir/foo.txt --content "1234567890"`)
             .stdout("ERR: Error opening 'dir/foo.txt' for write: -2")
-            .stdin(/>/, '.exit')
+            .stdin('>', '.exit')
             .code(0);
         });
 
@@ -99,11 +99,11 @@ describe('PSJ Flash Scenarios', () => {
 
             await runner()
             .fork('../dist/index.js', ['--auto-connect'], {})
-            .stdin(/>/, `.write test1.txt --content "${fileText}"`)
-            .stdin(/>/, '.read test1.txt')
+            .stdin('>', `.write test1.txt --content "${fileText}"`)
+            .stdin('>', '.read test1.txt')
             .stdout("1234567890")
             .stdout("10 bytes (1 segments) read")
-            .stdin(/>/, '.exit')
+            .stdin('>', '.exit')
             .code(0);
         });
 
@@ -115,11 +115,11 @@ describe('PSJ Flash Scenarios', () => {
 
             await runner()
             .fork('../dist/index.js', ['--auto-connect'], {})
-            .stdin(/>/, `.write test2.txt --content "${fileText}"`)
-            .stdin(/>/, '.read test2.txt')
+            .stdin('>', `.write test2.txt --content "${fileText}"`)
+            .stdin('>', '.read test2.txt')
             .stdout(fileText)
             .stdout("11 bytes (1 segments) read")
-            .stdin(/>/, '.exit')
+            .stdin('>', '.exit')
             .code(0);
         });
 
@@ -127,9 +127,9 @@ describe('PSJ Flash Scenarios', () => {
 
             await runner()
             .fork('../dist/index.js', ['--auto-connect'], {})
-            .stdin(/>/, '.read unknown.txt')
+            .stdin('>', '.read unknown.txt')
             .stdout("ERR: File 'unknown.txt' not found")
-            .stdin(/>/, '.exit')
+            .stdin('>', '.exit')
             .code(0);
         });
 
@@ -138,10 +138,10 @@ describe('PSJ Flash Scenarios', () => {
 
             await runner()
             .fork('../dist/index.js', ['--auto-connect'], {})
-            .stdin(/>/, `.write .hidden.txt --content "1234567890"`)
-            .stdin(/>/, '.read .hidden.txt')
+            .stdin('>', `.write .hidden.txt --content "1234567890"`)
+            .stdin('>', '.read .hidden.txt')
             .stdout("ERR: Permission denied")
-            .stdin(/>/, '.exit')
+            .stdin('>', '.exit')
             .code(0);
         });
     });
