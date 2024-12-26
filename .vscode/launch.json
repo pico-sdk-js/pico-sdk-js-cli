@@ -20,7 +20,7 @@
             ],
             "env": {
                 // Update below path to local executable to connect to via ".connect --local"
-                "PSJ_LOCAL": "${workspaceFolder}/../pico-sdk-js/build/pico-sdk-js-0.0.1"
+                "PSJ_LOCAL": "${workspaceFolder}/../engine/build/pico-sdk-js-0.0.1"
             }
         },
         {
@@ -31,7 +31,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/index.js",
-            "args": ["--help"],
+            "args": [],
             "preLaunchTask": "npm: build",
             "console": "integratedTerminal",
             "outFiles": [

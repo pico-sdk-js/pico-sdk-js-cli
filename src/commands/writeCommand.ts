@@ -55,7 +55,7 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
     const destName = args.remotePath;
     const srcName = args.content ? 'static content' : args.localPath ? path.resolve(args.localPath) : path.resolve(args.remotePath);
     const contents = args.content ?? new TextDecoder().decode(fs.readFileSync(srcName));
-    const pageSize = 1024;
+    const pageSize = 256;
     const pages = Math.ceil(contents.length / pageSize);
     let bytesWritten = 0;
 
