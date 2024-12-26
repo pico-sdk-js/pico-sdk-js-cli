@@ -31,12 +31,25 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/index.js",
-            "args": [],
+            "args": ["--help"],
             "preLaunchTask": "npm: build",
             "console": "integratedTerminal",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "e2e",
+            "cwd": "${workspaceFolder}/e2e",
+            "program": "node_modules/jest/bin/jest.js",
+            "args": ["--detectOpenHandles", "--testTimeout=300000"],
+            "runtimeArgs": ["--experimental-vm-modules"],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "console": "integratedTerminal"
         }
     ]
 }

@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 1`] = `"Connecting ... "`;
+
+exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 2`] = `""`;
+
+exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 3`] = `"Connecting to serial device at /dev/ttyACM0"`;
+
+exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 4`] = `""`;
+
+exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 5`] = `"> "`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 1`] = `"Options:"`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 2`] = `"      --help                Show help                                  [boolean]"`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 3`] = `"      --version             Show version number                        [boolean]"`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 4`] = `"      --log-level, --ll     Sets the log level of the output."`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 5`] = `"     [string] [choices: "error", "warning", "debug", "trace"] [default: "error"]"`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 6`] = `"      --auto-connect, --ac  Automatically connects on start.           [boolean]"`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 7`] = `"  -l, --local               Starts a local process to connect to. NOTE: Must set"`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 8`] = `"                            the "PSJ_LOCAL" environment variable to the"`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 9`] = `"                            pico-sdk-js executable.                    [boolean]"`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 10`] = `"      --skip-header         Do not output the process header."`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 11`] = `"                                                      [boolean] [default: false]"`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 12`] = `""`;
