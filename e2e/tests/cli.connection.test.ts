@@ -22,60 +22,51 @@ describe('PSJ Connection Scenarios', () => {
         });
     });
 
-    // describe('.exit', () => {
-    //     it('in REPL quits process', async () => {
-    //         await psjRunner()
-    //         .start(['--skip-header'])
-    //         .stdin('>', '.exit')
-    //         .assertSnapshot()
-    //         .code(0);
-    //     });
-    // });
+    describe('.exit', () => {
+        it('in REPL quits process', async () => {
+            await psjRunner()
+            .start(['--skip-header'])
+            .command('.exit')
+            .assertSnapshot()
+            .assertExitCode(0);
+        });
+    });
 
-    // describe('.ls', () => {
-    //     it('shows error when not connected', async () => {
-    //         await psjRunner()
-    //         .start(['--skip-header'])
-    //         .stdin('>', '.ls')
-    //         .stdin('>', '.exit')
-    //         .assertSnapshot()
-    //         .code(0);
-    //     });
-    // });
+    describe('.ls', () => {
+        it('shows error when not connected', async () => {
+            await psjRunner()
+            .start(['--skip-header'])
+            .command('.ls')
+            .assertSnapshot();
+        });
+    });
 
-    // describe('.connect', () => {
-    //     it('connects to /dev/ttyACM0', async () => {
-    //         await runner()
-    //             .fork('../dist/index.js', [], {})
-    //             .stdin('>', '.connect')
-    //             .stdout('Connecting to serial device at /dev/ttyACM0')
-    //             .stdin('>', '.exit')
-    //             .code(0);
-    //     });
+    describe('.connect', () => {
+        it('connects to /dev/ttyACM0', async () => {
+            await psjRunner()
+                .start(['--skip-header'])
+                .command('.connect')
+                .assertSnapshot();
+        });
 
-    //     it('connection failure allows reconnect', async () => {
-    //         await runner()
-    //             .fork('../dist/index.js', [], {})
-    //             .stdin('>', '.connect -D /dev/ttyACM99')
-    //             .stdout('Error: No such file or directory, cannot open /dev/ttyACM99')
-    //             .stdin('>', '.connect')
-    //             .stdout('Connecting to serial device at /dev/ttyACM0')
-    //             .stdin('>', '.exit')
-    //             .code(0);
+        it('connection failure allows reconnect', async () => {
+            await psjRunner()
+                .start(['--skip-header'])
+                .command('.connect -D /dev/ttyACM99')
+                .command('.connect')
+                .assertSnapshot();
 
-    //     });
-    // });
+        });
+    });
 
 
-    // describe('.disconnect', () => {
-    //     it('disconnects from /dev/ttyACM0', async () => {
-    //         await runner()
-    //             .fork('../dist/index.js', ['--auto-connect'], {})
-    //             .stdin('>', '.disconnect')
-    //             .stdout('Disconnecting ...')
-    //             .stdin('>', '.exit')
-    //             .code(0);
-    //     });
-    // });
+    describe('.disconnect', () => {
+        it('disconnects from /dev/ttyACM0', async () => {
+            await psjRunner()
+                .start(['--auto-connect', '--skip-header'])
+                .command('.disconnect')
+                .assertSnapshot();
+        });
+    });
 
 });

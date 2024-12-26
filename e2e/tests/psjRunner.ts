@@ -78,10 +78,9 @@ class PsjTestRunner implements PromiseLike<void> {
     public assertSnapshot(): PsjTestRunner {
         this._steps.push(async () => {
             // assertSnapshot();
-            while (this._stdOut.length > 0) {
-                const line = this._stdOut.shift();
-                expect(line).toMatchSnapshot('stdOut');
-            }
+            const stdOut = this._stdOut.join('\n');
+            expect(stdOut).toMatchSnapshot('stdOut');
+            this._stdOut = [];
         });
 
         return this;
@@ -121,8 +120,9 @@ class PsjTestRunner implements PromiseLike<void> {
             
             if (this._proc) {
                 this.command('.exit');
-                this.assertExit();
             }
+
+            this.assertExitCode(0);
 
             while (this._steps.length > 0) {
                 const step = this._steps.shift();

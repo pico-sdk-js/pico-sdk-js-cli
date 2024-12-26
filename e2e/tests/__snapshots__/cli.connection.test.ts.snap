@@ -1,35 +1,69 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 1`] = `"Connecting ... "`;
+exports[`PSJ Connection Scenarios .connect connection failure allows reconnect: stdOut 1`] = `
+"> .connect -D /dev/ttyACM99
+Connecting ... 
 
-exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 2`] = `""`;
+Connecting to serial device at /dev/ttyACM99
 
-exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 3`] = `"Connecting to serial device at /dev/ttyACM0"`;
+ERR: Error: No such file or directory, cannot open /dev/ttyACM99
 
-exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 4`] = `""`;
+> .connect
+Connecting ... 
 
-exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 5`] = `"> "`;
+Connecting to serial device at /dev/ttyACM0
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 1`] = `"Options:"`;
+> "
+`;
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 2`] = `"      --help                Show help                                  [boolean]"`;
+exports[`PSJ Connection Scenarios .connect connects to /dev/ttyACM0: stdOut 1`] = `
+"> .connect
+Connecting ... 
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 3`] = `"      --version             Show version number                        [boolean]"`;
+Connecting to serial device at /dev/ttyACM0
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 4`] = `"      --log-level, --ll     Sets the log level of the output."`;
+> "
+`;
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 5`] = `"     [string] [choices: "error", "warning", "debug", "trace"] [default: "error"]"`;
+exports[`PSJ Connection Scenarios .disconnect disconnects from /dev/ttyACM0: stdOut 1`] = `
+"Connecting ... 
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 6`] = `"      --auto-connect, --ac  Automatically connects on start.           [boolean]"`;
+Connecting to serial device at /dev/ttyACM0
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 7`] = `"  -l, --local               Starts a local process to connect to. NOTE: Must set"`;
+> .disconnect
+Disconnecting ... 
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 8`] = `"                            the "PSJ_LOCAL" environment variable to the"`;
+> "
+`;
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 9`] = `"                            pico-sdk-js executable.                    [boolean]"`;
+exports[`PSJ Connection Scenarios .exit in REPL quits process: stdOut 1`] = `"> .exit"`;
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 10`] = `"      --skip-header         Do not output the process header."`;
+exports[`PSJ Connection Scenarios .ls shows error when not connected: stdOut 1`] = `
+"> .ls
+ERR: Not connected, run .connect to connect to a device running Pico-Sdk-JS.
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 11`] = `"                                                      [boolean] [default: false]"`;
+> "
+`;
 
-exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 12`] = `""`;
+exports[`PSJ Connection Scenarios command line args --auto-connect connects to /dev/ttyACM0: stdOut 1`] = `
+"Connecting ... 
+
+Connecting to serial device at /dev/ttyACM0
+
+> "
+`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 1`] = `
+"Options:
+      --help                Show help                                  [boolean]
+      --version             Show version number                        [boolean]
+      --log-level, --ll     Sets the log level of the output.
+     [string] [choices: "error", "warning", "debug", "trace"] [default: "error"]
+      --auto-connect, --ac  Automatically connects on start.           [boolean]
+  -l, --local               Starts a local process to connect to. NOTE: Must set
+                            the "PSJ_LOCAL" environment variable to the
+                            pico-sdk-js executable.                    [boolean]
+      --skip-header         Do not output the process header.
+                                                      [boolean] [default: false]
+"
+`;

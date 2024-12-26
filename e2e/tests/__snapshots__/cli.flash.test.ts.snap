@@ -1,0 +1,84 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PSJ Flash Scenarios .read is able to read small existing file: stdOut 1`] = `
+"Connecting ... 
+
+Connecting to serial device at /dev/ttyACM0
+
+> .write test1.txt --content "1234567890"
+Writing "static content" to "test1.txt"
+
+10 bytes written
+
+> .read test1.txt
+Reading from "test1.txt"
+
+1234567890
+
+10 bytes (1 segments) read
+> "
+`;
+
+exports[`PSJ Flash Scenarios .read shows error for non-existing file: stdOut 1`] = `
+"Connecting ... 
+
+Connecting to serial device at /dev/ttyACM0
+
+> .read unknown.txt
+Reading from "unknown.txt"
+
+ERR: File 'unknown.txt' not found
+
+> "
+`;
+
+exports[`PSJ Flash Scenarios .write cannot write a file to a subdirectory: stdOut 1`] = `
+"Connecting ... 
+
+Connecting to serial device at /dev/ttyACM0
+
+> .write ./dir/foo.txt --content "1234567890"
+Writing "static content" to "dir/foo.txt"
+
+ERR: Error writing to 'dir/foo.txt'
+> 
+ERR: Error opening 'dir/foo.txt' for write: -2
+> "
+`;
+
+exports[`PSJ Flash Scenarios .write is able to write a small file: stdOut 1`] = `
+"Connecting ... 
+
+Connecting to serial device at /dev/ttyACM0
+
+> .write test1.txt --content "1234567890"
+Writing "static content" to "test1.txt"
+
+10 bytes written
+
+> "
+`;
+
+exports[`PSJ Flash Scenarios .write will clobber existing file: stdOut 1`] = `
+"Connecting ... 
+
+Connecting to serial device at /dev/ttyACM0
+
+> .write test1.txt --content "1234567890"
+Writing "static content" to "test1.txt"
+
+10 bytes written
+
+> .write test1.txt --content "abcdefghij"
+Writing "static content" to "test1.txt"
+
+10 bytes written
+
+> .read test1.txt
+Reading from "test1.txt"
+
+abcdefghij
+
+10 bytes (1 segments) read
+> "
+`;
