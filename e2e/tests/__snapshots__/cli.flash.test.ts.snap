@@ -40,6 +40,7 @@ exports[`PSJ Flash Scenarios .write cannot write a file to a subdirectory: stdOu
 Connecting to serial device at /dev/ttyACM0
 > .write ./dir/foo.txt --content "1234567890"
 Writing "static content" to "dir/foo.txt"
+ERR: Error opening 'dir/foo.txt' for write: -2
 ERR: Error writing to 'dir/foo.txt'
 > "
 `;
