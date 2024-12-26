@@ -78,7 +78,7 @@ class PsjTestRunner implements PromiseLike<void> {
     public assertSnapshot(): PsjTestRunner {
         this._steps.push(async () => {
             // assertSnapshot();
-            const stdOut = this._stdOut.join('\n');
+            const stdOut = this._stdOut.filter((v) => v.length > 0).join('\n');
             expect(stdOut).toMatchSnapshot('stdOut');
             this._stdOut = [];
         });
