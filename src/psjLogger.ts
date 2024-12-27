@@ -23,6 +23,10 @@ class PSJLogger {
         console.log(this.getString(msg));
     }
 
+    logMsg(level: LogLevel, msg: string) {
+        this.log({ level, msg });
+    }
+
     getString(msg: LogMessage) {
         switch (msg.level) {
             case LogLevel.Error:

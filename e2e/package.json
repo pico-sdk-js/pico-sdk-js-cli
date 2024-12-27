@@ -4,6 +4,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
+    "pretest": "npm run build --prefix ..",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles",
     "test:update": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --updateSnapshot"
   },

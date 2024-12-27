@@ -1,4 +1,8 @@
 import {describe, beforeEach, it, xit} from '@jest/globals';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+
 import psjRunner from './psjRunner';
 
 describe('PSJ Flash Scenarios', () => {
@@ -39,18 +43,24 @@ describe('PSJ Flash Scenarios', () => {
             .command(`.write test1.txt --content "abcdefghij"`)
             .command('.read test1.txt')
             .assertSnapshot();
-
         });
         
-        xit.failing('will error if file is larger than available space', async () => {
+        it('will error if file is larger than available space', async () => {
             // 1mb file
             const fileText = "a".repeat(1048576);
 
+            const tempFile = path.join(os.tmpdir(), 'test2.txt');
+            await fs.writeFile(tempFile, fileText);
+
+            const procStart = process.hrtime();
+
             await psjRunner()
             .start(['--auto-connect', '--skip-header'])
-            .command(`.write test2.txt --content "${fileText}"`)
+            .command(`.write test2.txt --local-path "${tempFile}"`)
             .assertSnapshot();
-        });
+
+            console.log(`Perf Time: ${procStart[0] * 1000 + procStart[1] / 1000000}ms`)
+        }, 150000);
         
         xit.failing('cannot write a hidden file', async () => {
             // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/10
