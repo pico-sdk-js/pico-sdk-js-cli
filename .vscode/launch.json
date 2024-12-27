@@ -20,7 +20,7 @@
             ],
             "env": {
                 // Update below path to local executable to connect to via ".connect --local"
-                "PSJ_LOCAL": "${workspaceFolder}/../pico-sdk-js/build/pico-sdk-js-0.0.1"
+                "PSJ_LOCAL": "${workspaceFolder}/../engine/build/pico-sdk-js-0.0.1"
             }
         },
         {
@@ -37,6 +37,19 @@
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "e2e",
+            "cwd": "${workspaceFolder}/e2e",
+            "program": "node_modules/jest/bin/jest.js",
+            "args": ["--detectOpenHandles", "--testTimeout=300000", "--testNamePattern=\"will error if file is larger than available space\""],
+            "runtimeArgs": ["--experimental-vm-modules"],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "console": "integratedTerminal"
         }
     ]
 }

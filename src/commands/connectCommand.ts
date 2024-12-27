@@ -61,5 +61,10 @@ export async function connectToPico(replServer: PsjReplServer, text: string): Pr
     }
 
     replServer.setConnection(connection);
-    await connection.open();
+    try {
+        await connection.open();
+    } catch (e) {
+        replServer.setConnection(null);
+        throw e;
+    }
 }

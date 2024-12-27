@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Reducing block sizes allowing appended files",
+  "packageName": "@pico-sdk-js/cli",
+  "email": "jt000@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}

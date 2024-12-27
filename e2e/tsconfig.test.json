@@ -1,17 +1,15 @@
 {
     "compilerOptions": {
-      "rootDir": "src",
-      "outDir": "dist",
+      "rootDir": "tests",
+      "outDir": "dist_test",
       "strict": true,
-      "target": "es2022",
-      "module": "commonjs",
+      "target": "ESNext",
+      "module": "ESNext",
       "sourceMap": true,
       "esModuleInterop": true,
       "moduleResolution": "node",
-      "resolveJsonModule": true
+      "resolveJsonModule": true,
+      "types": ["jest", "node"]
     },
     "compileOnSave": true,
-    "exclude": [
-      "e2e/**"
-    ]
   }

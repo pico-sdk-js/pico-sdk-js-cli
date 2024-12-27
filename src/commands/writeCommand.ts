@@ -1,8 +1,77 @@
 import Yargs from 'yargs/yargs';
 import { PsjReplServer } from '../psjReplServer';
-import fs from 'fs';
+import fs from 'node:fs/promises';
 import path from 'path';
 import { WriteCommandOptions } from '../PicoSdkJsEngineConnection';
+
+interface IReaderResult {
+    bytesRead: number;
+    content: string;
+}
+
+interface IReader {
+    srcName(): string;
+    readNext(size: number): Promise<IReaderResult>;
+}
+
+class FileReader implements IReader {
+    _srcName: string;
+    _fileHandle?: fs.FileHandle;
+    _decoder = new TextDecoder();
+
+    constructor(filePath: string) {
+        this._srcName = path.resolve(filePath);
+    }
+
+    srcName(): string {
+        return this._srcName;
+    }
+
+    async readNext(size: number): Promise<IReaderResult> {
+        if (!this._fileHandle) {
+            this._fileHandle = await fs.open(this._srcName, 'r');
+        }
+
+        const buffer = new Int8Array(size);
+        const result = await this._fileHandle.read(buffer, 0, size);
+        return {
+            bytesRead: result.bytesRead,
+            content: this._decoder.decode(result.buffer)
+        };
+    }
+}
+
+class StringReader implements IReader {
+    _start: number;
+    _length: number;
+
+    constructor(private content: string) {
+        this._start = 0;
+        this._length = content.length;
+    }
+
+    srcName(): string {
+        return 'static content';
+    }
+
+    async readNext(size: number): Promise<IReaderResult> {
+        if (this._start >= this._length) {
+            return {
+                bytesRead: 0,
+                content: ''
+            };
+        }
+
+        const resultLength = Math.min(this._length - this._start, size);
+        const resultData = this.content.substring(this._start, this._start + resultLength);
+        this._start += resultLength;
+
+        return {
+            bytesRead: resultLength,
+            content: resultData
+        };
+    }
+}
 
 export async function writeCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
@@ -53,24 +122,30 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
     }
 
     const destName = args.remotePath;
-    const srcName = args.content ? 'static content' : args.localPath ? path.resolve(args.localPath) : path.resolve(args.remotePath);
-    const contents = args.content ?? new TextDecoder().decode(fs.readFileSync(srcName));
+    const reader = args.content ? new StringReader(args.content) : args.localPath ? new FileReader(args.localPath) : new FileReader(args.remotePath);
     const pageSize = 1024;
-    const pages = Math.ceil(contents.length / pageSize);
     let bytesWritten = 0;
+    let pageCount = 0;
 
-    console.log('Writing "%s" to "%s"', srcName, destName);
+    let bytes = await reader.readNext(pageSize);
 
-    for (let i = 0; i < pages; i++) {
+    console.log('Writing "%s" to "%s"', reader.srcName(), destName);
+
+    while (bytes.bytesRead > 0) {
         const options: WriteCommandOptions = {
             path: destName,
-            mode: i === 0 ? 'create' : 'append',
-            content: contents.substring(i * pageSize, (i + 1) * pageSize)
+            mode: pageCount === 0 ? 'create' : 'append',
+            content: bytes.content
         };
 
         const { value } = await connection.write(options);
+
+        pageCount++;
+
         bytesWritten += value.bytes;
+
+        bytes = await reader.readNext(pageSize);
     }
 
-    console.log('%d bytes written', bytesWritten);
+    console.log('%d bytes (%d segments) written', bytesWritten, pageCount);
 }

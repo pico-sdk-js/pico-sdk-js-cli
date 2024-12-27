@@ -15,8 +15,16 @@ export interface LogMessage {
 
 class PSJLogger {
     log(msg: LogMessage) {
-        process.stdout.clearLine(0);
+        if (process.stdout.clearLine) {
+            // clearLine not available in E2E testing
+            process.stdout.clearLine(0);
+        }
+
         console.log(this.getString(msg));
+    }
+
+    logMsg(level: LogLevel, msg: string) {
+        this.log({ level, msg });
     }
 
     getString(msg: LogMessage) {

@@ -1,0 +1,22 @@
+{
+  "name": "pico-sdk-js-e2e-testing",
+  "version": "0.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "pretest": "npm run build --prefix ..",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles",
+    "test:update": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --updateSnapshot"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "execa": "^9.5.2",
+    "jest": "^29.7.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "ts-jest": "^29.2.5"
+  }
+}
