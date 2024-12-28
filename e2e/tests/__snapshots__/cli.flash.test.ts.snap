@@ -1,5 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`PSJ Flash Scenarios .delete is able to delete an existing file: stdOut 1`] = `
+"Connecting ... 
+Connecting to serial device at /dev/ttyACM0
+> .write test1.txt --content "1234567890"
+Writing "static content" to "test1.txt"
+10 bytes (1 segments) written
+> .delete test1.txt
+Deleted "test1.txt"
+> "
+`;
+
+exports[`PSJ Flash Scenarios .delete shows error for non-existing file: stdOut 1`] = `
+"Connecting ... 
+Connecting to serial device at /dev/ttyACM0
+> .delete test1.txt
+ERR: File 'test1.txt' not found
+> "
+`;
+
 exports[`PSJ Flash Scenarios .read is able to read large existing file: stdOut 1`] = `
 "Connecting ... 
 Connecting to serial device at /dev/ttyACM0

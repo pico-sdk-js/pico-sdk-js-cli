@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Adding E2E tests for additional CLI commands",
+  "packageName": "@pico-sdk-js/cli",
+  "email": "jt000@users.noreply.github.com",
+  "dependentChangeType": "none"
+}

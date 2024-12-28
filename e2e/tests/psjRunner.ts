@@ -75,12 +75,45 @@ class PsjTestRunner implements PromiseLike<void> {
         return this;
     }
 
+    public pause(ms: number): PsjTestRunner {
+        this._steps.push(() => {
+            // pause()
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, ms);
+            });
+        });
+
+        return this;
+    }
+
     public assertSnapshot(): PsjTestRunner {
         this._steps.push(async () => {
             // assertSnapshot();
             const stdOut = this._stdOut.filter((v) => v.length > 0).join('\n');
             expect(stdOut).toMatchSnapshot('stdOut');
-            this._stdOut = [];
+        });
+
+        this.resetStdout();
+
+        return this;
+    };
+
+    public assertInStdout(match: RegExp | string): PsjTestRunner {
+        this._steps.push(async () => {
+            // assertInStdout
+            const stdOut = this._stdOut.filter((v) => v.length > 0).join('\n');
+            expect(stdOut).toMatch(match);
+        });
+
+        return this;
+    }
+
+    public resetStdout(): PsjTestRunner {
+        this._steps.push(async () => {
+            // resetStdout();
+            this._stdOut = ['> '];
         });
 
         return this;
