@@ -123,4 +123,35 @@ describe('PSJ Flash Scenarios', () => {
         });
     });
 
+    describe('.delete', () => {
+
+        it('is able to delete an existing file', async () => {
+            // 10 byte file
+            const fileText = "1234567890";
+
+            await psjRunner()
+            .start(['--auto-connect', '--skip-header'])
+            .command(`.write test1.txt --content "${fileText}"`)
+            .command(`.delete test1.txt`)
+            .assertSnapshot();            
+        });
+
+        it('shows error for non-existing file', async () => {
+
+            await psjRunner()
+            .start(['--auto-connect', '--skip-header'])
+            .command(`.delete test1.txt`)
+            .assertSnapshot();            
+        });
+
+        xit.failing('cannot delete a hidden file', async () => {
+            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/10
+
+            await psjRunner()
+            .start(['--auto-connect', '--skip-header'])
+            .command(`.write .hidden.txt --content "1234567890"`)
+            .command('.delete .hidden.txt')
+            .assertSnapshot();
+        });
+    });
 });
