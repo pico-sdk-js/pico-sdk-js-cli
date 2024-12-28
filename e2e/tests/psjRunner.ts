@@ -77,6 +77,7 @@ class PsjTestRunner implements PromiseLike<void> {
 
     public pause(ms: number): PsjTestRunner {
         this._steps.push(() => {
+            // pause()
             return new Promise((resolve) => {
                 setTimeout(() => {
                     resolve();
@@ -97,6 +98,16 @@ class PsjTestRunner implements PromiseLike<void> {
 
         return this;
     };
+
+    public assertInStdout(match: RegExp | string): PsjTestRunner {
+        this._steps.push(async () => {
+            // assertInStdout
+            const stdOut = this._stdOut.filter((v) => v.length > 0).join('\n');
+            expect(stdOut).toMatch(match);
+        });
+
+        return this;
+    }
 
     public assertExit(): PsjTestRunner {
         this.waitForIdle();
