@@ -75,6 +75,18 @@ class PsjTestRunner implements PromiseLike<void> {
         return this;
     }
 
+    public pause(ms: number): PsjTestRunner {
+        this._steps.push(() => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, ms);
+            });
+        });
+
+        return this;
+    }
+
     public assertSnapshot(): PsjTestRunner {
         this._steps.push(async () => {
             // assertSnapshot();
