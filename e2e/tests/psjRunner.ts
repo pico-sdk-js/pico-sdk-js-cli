@@ -93,8 +93,9 @@ class PsjTestRunner implements PromiseLike<void> {
             // assertSnapshot();
             const stdOut = this._stdOut.filter((v) => v.length > 0).join('\n');
             expect(stdOut).toMatchSnapshot('stdOut');
-            this._stdOut = [];
         });
+
+        this.resetStdout();
 
         return this;
     };
@@ -112,7 +113,7 @@ class PsjTestRunner implements PromiseLike<void> {
     public resetStdout(): PsjTestRunner {
         this._steps.push(async () => {
             // resetStdout();
-            this._stdOut = [];
+            this._stdOut = ['> '];
         });
 
         return this;

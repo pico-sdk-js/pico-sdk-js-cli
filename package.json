@@ -33,6 +33,7 @@
   "scripts": {
     "start": "npm run build && node dist/index.js",
     "test": "npm run build && npm test --prefix ./e2e/",
+    "test:update": "npm run build && npm run test:update --prefix ./e2e/",
     "pack": "npm run build && npm pack --pack-destination dist",
     "build": "npx eslint ./src && tsc --project tsconfig.json",
     "postbuild": "npm run format-check",

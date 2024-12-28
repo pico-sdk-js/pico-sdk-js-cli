@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`PSJ Runtime Scenarios .kill is able to stop an executing script: stdOut 1`] = `
-"> 
+"> .kill
+> 
 ERR: Script aborted
 > "
 `;
