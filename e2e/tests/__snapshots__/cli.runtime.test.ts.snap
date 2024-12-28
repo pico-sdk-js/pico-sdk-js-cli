@@ -1,5 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`PSJ Runtime Scenarios .kill is able to stop an executing script: stdOut 1`] = `
+"> 
+ERR: Script aborted
+> "
+`;
+
+exports[`PSJ Runtime Scenarios .kill shows an error when nothing running: stdOut 1`] = `
+"Connecting ... 
+Connecting to serial device at /dev/ttyACM0
+> .kill
+> "
+`;
+
 exports[`PSJ Runtime Scenarios .restart hard will disconnect & reset data: stdOut 1`] = `
 "Connecting ... 
 Connecting to serial device at /dev/ttyACM0
@@ -23,6 +36,28 @@ Connecting to serial device at /dev/ttyACM0
 Device restarting
 > y
 ERR: y is not defined
+> "
+`;
+
+exports[`PSJ Runtime Scenarios .run is able to execute an existing file: stdOut 1`] = `
+"Connecting ... 
+Connecting to serial device at /dev/ttyACM0
+> .write test.js --content "print('success!');"
+Writing "static content" to "test.js"
+18 bytes (1 segments) written
+> .run test.js
+Executing "test.js"
+> 
+success!
+> "
+`;
+
+exports[`PSJ Runtime Scenarios .run shows an error for a non-existing file: stdOut 1`] = `
+"Connecting ... 
+Connecting to serial device at /dev/ttyACM0
+> .run unknown.js
+Executing "unknown.js"
+ERR: File 'unknown.js' not found
 > "
 `;
 

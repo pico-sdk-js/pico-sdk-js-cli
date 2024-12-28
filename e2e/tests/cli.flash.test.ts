@@ -1,4 +1,3 @@
-import {describe, beforeEach, it, xit} from '@jest/globals';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -7,7 +6,7 @@ import psjRunner from './psjRunner';
 
 describe('PSJ Flash Scenarios', () => {
 
-    beforeEach(async () => {
+    afterEach(async () => {
         // Clear flash ram to start from scratch
         await psjRunner()
         .start(['--auto-connect', '--skip-header'])

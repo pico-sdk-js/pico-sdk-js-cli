@@ -109,6 +109,15 @@ class PsjTestRunner implements PromiseLike<void> {
         return this;
     }
 
+    public resetStdout(): PsjTestRunner {
+        this._steps.push(async () => {
+            // resetStdout();
+            this._stdOut = [];
+        });
+
+        return this;
+    };
+
     public assertExit(): PsjTestRunner {
         this.waitForIdle();
         
