@@ -126,7 +126,7 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
         throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
     }
 
-    // if no localpath nor content is explicitly given, then remotepath is both the local path and remote file name
+    // if no localPath nor content is explicitly given, then remotePath is both the local path and remote file name
     const destName = args.localPath || args.content ? args.remotePath : path.basename(args.remotePath);
     const reader = args.content ? new StringReader(args.content) : args.localPath ? new FileReader(args.localPath) : new FileReader(args.remotePath);
     const pageSize = 1024;
