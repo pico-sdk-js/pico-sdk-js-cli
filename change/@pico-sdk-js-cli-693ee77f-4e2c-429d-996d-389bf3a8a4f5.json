@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Fixing issue in .write where files cause extra zeros to be added to content",
+  "packageName": "@pico-sdk-js/cli",
+  "email": "jt000@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
