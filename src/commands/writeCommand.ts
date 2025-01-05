@@ -14,7 +14,7 @@ interface IReader {
     readNext(size: number): Promise<IReaderResult>;
 }
 
-export class FileReader implements IReader {
+class FileReader implements IReader {
     _srcName: string;
     _fileHandle?: fs.FileHandle;
     _decoder = new TextDecoder();
@@ -46,7 +46,7 @@ export class FileReader implements IReader {
     }
 }
 
-export class StringReader implements IReader {
+class StringReader implements IReader {
     _start: number;
     _length: number;
 
