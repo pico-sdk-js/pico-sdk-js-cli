@@ -107,3 +107,29 @@ ERR: Error writing 'test2.txt': -28
 ERR: Error writing to 'test2.txt'
 > "
 `;
+
+exports[`PSJ Flash Scenarios .write will write a JS file from another directory without path arguement: stdOut 1`] = `
+"Connecting ... 
+Connecting to serial device at /dev/ttyACM0
+> .write /tmp/index.js
+Writing "/tmp/index.js" to "index.js"
+79 bytes (1 segments) written
+> .run index.js
+Executing "index.js"
+> 
+hello world!
+> "
+`;
+
+exports[`PSJ Flash Scenarios .write will write a JS file: stdOut 1`] = `
+"Connecting ... 
+Connecting to serial device at /dev/ttyACM0
+> .write index.js -p "/tmp/index.js"
+Writing "/tmp/index.js" to "index.js"
+79 bytes (1 segments) written
+> .run index.js
+Executing "index.js"
+> 
+hello world!
+> "
+`;

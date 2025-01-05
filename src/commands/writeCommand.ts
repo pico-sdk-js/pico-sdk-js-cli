@@ -32,11 +32,16 @@ class FileReader implements IReader {
             this._fileHandle = await fs.open(this._srcName, 'r');
         }
 
-        const buffer = new Int8Array(size);
+        const buffer = Buffer.alloc(size);
         const result = await this._fileHandle.read(buffer, 0, size);
+
+        if (result.bytesRead === 0) {
+            return { bytesRead: 0, content: '' };
+        }
+
         return {
             bytesRead: result.bytesRead,
-            content: this._decoder.decode(result.buffer)
+            content: result.buffer.toString('utf-8', 0, result.bytesRead)
         };
     }
 }
@@ -108,7 +113,7 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
         .exitProcess(false);
 
     yargs.example('.write file.js --local-path ./myFile.js', 'write the local "myFile.js" to the Pico with the file name "file.js".');
-    yargs.example('.write file.js', 'write the local "file.js" to the Pico with the file name "file.js".');
+    yargs.example('.write /tmp/file.js', 'write the local "/tmp/file.js" to the Pico with the file name "file.js".');
 
     const args = await yargs.parseAsync();
 
@@ -121,7 +126,8 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
         throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
     }
 
-    const destName = args.remotePath;
+    // if no localPath nor content is explicitly given, then remotePath is both the local path and remote file name
+    const destName = args.localPath || args.content ? args.remotePath : path.basename(args.remotePath);
     const reader = args.content ? new StringReader(args.content) : args.localPath ? new FileReader(args.localPath) : new FileReader(args.remotePath);
     const pageSize = 1024;
     let bytesWritten = 0;
