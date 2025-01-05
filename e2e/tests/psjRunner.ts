@@ -19,6 +19,14 @@ class PsjTestRunner implements PromiseLike<void> {
                 cancelSignal: this._abortController.signal,
                 gracefulCancel: true
             });
+            this._proc.stderr?.on('data', (data) => {
+
+                const lines: string[] = data.toString().split('\n');
+                if (lines.length > 0) {
+                    this._stdOut.push(...lines);
+                    this._isIdle = (lines[lines.length - 1] === '> ');
+                }
+            });
             this._proc.stdout?.on('data', (data) => {
 
                 const lines: string[] = data.toString().split('\n');

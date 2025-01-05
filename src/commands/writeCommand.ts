@@ -12,6 +12,7 @@ interface IReaderResult {
 interface IReader {
     srcName(): string;
     readNext(size: number): Promise<IReaderResult>;
+    close(): void;
 }
 
 class FileReader implements IReader {
@@ -44,11 +45,16 @@ class FileReader implements IReader {
             content: result.buffer.toString('utf-8', 0, result.bytesRead)
         };
     }
+
+    close(): void {
+        this._fileHandle?.close();
+        this._fileHandle = undefined;
+    }
 }
 
 class StringReader implements IReader {
     _start: number;
-    _length: number;
+    readonly _length: number;
 
     constructor(private content: string) {
         this._start = 0;
@@ -75,6 +81,10 @@ class StringReader implements IReader {
             bytesRead: resultLength,
             content: resultData
         };
+    }
+
+    close(): void {
+        this._start = 0;
     }
 }
 
@@ -129,29 +139,33 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
     // if no localPath nor content is explicitly given, then remotePath is both the local path and remote file name
     const destName = args.localPath || args.content ? args.remotePath : path.basename(args.remotePath);
     const reader = args.content ? new StringReader(args.content) : args.localPath ? new FileReader(args.localPath) : new FileReader(args.remotePath);
-    const pageSize = 1024;
-    let bytesWritten = 0;
-    let pageCount = 0;
+    try {
+        const pageSize = 1024;
+        let bytesWritten = 0;
+        let pageCount = 0;
 
-    let bytes = await reader.readNext(pageSize);
+        let bytes = await reader.readNext(pageSize);
 
-    console.log('Writing "%s" to "%s"', reader.srcName(), destName);
+        console.log('Writing "%s" to "%s"', reader.srcName(), destName);
 
-    while (bytes.bytesRead > 0) {
-        const options: WriteCommandOptions = {
-            path: destName,
-            mode: pageCount === 0 ? 'create' : 'append',
-            content: bytes.content
-        };
+        while (bytes.bytesRead > 0) {
+            const options: WriteCommandOptions = {
+                path: destName,
+                mode: pageCount === 0 ? 'create' : 'append',
+                content: bytes.content
+            };
 
-        const { value } = await connection.write(options);
+            const { value } = await connection.write(options);
 
-        pageCount++;
+            pageCount++;
 
-        bytesWritten += value.bytes;
+            bytesWritten += value.bytes;
 
-        bytes = await reader.readNext(pageSize);
+            bytes = await reader.readNext(pageSize);
+        }
+
+        console.log('%d bytes (%d segments) written', bytesWritten, pageCount);
+    } finally {
+        reader.close();
     }
-
-    console.log('%d bytes (%d segments) written', bytesWritten, pageCount);
 }
