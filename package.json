@@ -1,7 +1,7 @@
 {
   "name": "@pico-sdk-js/cli",
   "description": "CLI for connecting to a Raspberry Pi Pico with the Pico-SDK-JS installed",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "GPL-3.0",
   "bin": {
     "pico-sdk-js-cli": "dist/index.js",
