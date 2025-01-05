@@ -53,15 +53,11 @@ describe('PSJ Flash Scenarios', () => {
             const tempFile = path.join(os.tmpdir(), 'index.js');
             await fs.writeFile(tempFile, fileText);
 
-            const procStart = process.hrtime();
-
             await psjRunner()
             .start(['--auto-connect', '--skip-header'])
             .command(`.write index.js -p "${tempFile}"`)
             .command('.run index.js')
             .assertSnapshot();
-
-            console.log(`Perf Time: ${procStart[0] * 1000 + procStart[1] / 1000000}ms`)
         });
         
         it('will write a JS file from another directory without path arguement', async () => {
@@ -71,15 +67,11 @@ describe('PSJ Flash Scenarios', () => {
             const tempFile = path.join(os.tmpdir(), 'index.js');
             await fs.writeFile(tempFile, fileText);
 
-            const procStart = process.hrtime();
-
             await psjRunner()
             .start(['--auto-connect', '--skip-header'])
             .command(`.write ${tempFile}`)
             .command('.run index.js')
             .assertSnapshot();
-
-            console.log(`Perf Time: ${procStart[0] * 1000 + procStart[1] / 1000000}ms`)
         });
         
         it('will error if file is larger than available space', async () => {
@@ -89,14 +81,10 @@ describe('PSJ Flash Scenarios', () => {
             const tempFile = path.join(os.tmpdir(), 'test2.txt');
             await fs.writeFile(tempFile, fileText);
 
-            const procStart = process.hrtime();
-
             await psjRunner()
             .start(['--auto-connect', '--skip-header'])
             .command(`.write test2.txt --local-path "${tempFile}"`)
             .assertSnapshot();
-
-            console.log(`Perf Time: ${procStart[0] * 1000 + procStart[1] / 1000000}ms`)
         }, 150000);
         
         xit.failing('cannot write a hidden file', async () => {
