@@ -1,8 +1,16 @@
 # Change Log - @pico-sdk-js/cli
 
-<!-- This log was last generated on Sun, 05 Jan 2025 16:45:47 GMT and should not be manually modified. -->
+<!-- This log was last generated on Sun, 05 Jan 2025 19:12:57 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 0.0.4
+
+Sun, 05 Jan 2025 19:12:57 GMT
+
+### Patches
+
+- Fixing deprecation error on .write (jt000@users.noreply.github.com)
 
 ## 0.0.3
 

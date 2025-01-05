@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixing deprecation error on .write",
-  "packageName": "@pico-sdk-js/cli",
-  "email": "jt000@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
