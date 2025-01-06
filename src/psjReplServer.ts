@@ -44,6 +44,18 @@ export class PsjReplServer {
         }
     }
 
+    public async close() {
+        if (this.server) {
+            this.server.close();
+
+            const closePromise = this.connection?.close();
+            this.server = null;
+            this.connection = null;
+
+            await closePromise;
+        }
+    }
+
     public start() {
         this.server = repl.start({
             eval: (evalCmd: string, context: Context, file: string, cb: (err: Error | null, result: unknown) => void) => {
@@ -54,11 +66,7 @@ export class PsjReplServer {
         });
 
         this.server.on('exit', async () => {
-            const closePromise = this.connection?.close();
-            this.server = null;
-            this.connection = null;
-
-            await closePromise;
+            await this.close();
         });
 
         this.server.on('reset', async () => this.wrapCommand(() => restartCommand(this, '')));

@@ -7,6 +7,8 @@
  * @author jt000 <https://www.github.com/jt000>
  */
 
+import { addAbortListener } from 'node:events';
+
 import pkg from '../package.json';
 import { connectToPico } from './commands/connectCommand';
 import { LogLevel } from './psjLogger';
@@ -65,4 +67,13 @@ Type ".help" for more information.`);
     }
 
     server.start();
+
+    if (process.channel) {
+        const execa = await import('execa');
+        const cancelSignal = await execa.getCancelSignal();
+        addAbortListener(cancelSignal, () => {
+            console.log('Abort Raised');
+            server.close();
+        });
+    }
 })();

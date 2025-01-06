@@ -44,7 +44,7 @@
             "name": "e2e",
             "cwd": "${workspaceFolder}/e2e",
             "program": "node_modules/jest/bin/jest.js",
-            "args": ["--detectOpenHandles", "--testTimeout=300000", "--testNamePattern=\"will error if file is larger than available space\""],
+            "args": ["--detectOpenHandles", "--testTimeout=300000", "--testNamePattern=\".stats\""],
             "runtimeArgs": ["--experimental-vm-modules"],
             "skipFiles": [
                 "<node_internals>/**"
