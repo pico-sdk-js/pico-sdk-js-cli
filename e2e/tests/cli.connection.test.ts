@@ -59,14 +59,4 @@ describe('PSJ Connection Scenarios', () => {
         });
     });
 
-
-    describe('.disconnect', () => {
-        it('disconnects from /dev/ttyACM0', async () => {
-            await psjRunner()
-                .start(['--auto-connect', '--skip-header'])
-                .command('.disconnect')
-                .assertSnapshot();
-        });
-    });
-
 });

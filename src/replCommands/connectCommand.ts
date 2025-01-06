@@ -40,7 +40,7 @@ export async function connectToPico(replServer: PsjReplServer, text: string): Pr
     }
 
     if (replServer.getConnection()) {
-        throw new Error('Already connected, run .disconnect close current connection first');
+        throw new Error('Already connected...');
     }
 
     console.log('Connecting ... ');

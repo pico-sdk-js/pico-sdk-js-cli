@@ -1,6 +1,5 @@
 import Yargs from 'yargs/yargs';
 import { PsjReplServer } from '../psjReplServer';
-import { disconnectFromPico } from './disconnectCommand';
 
 export async function restartCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
@@ -41,6 +40,7 @@ export async function restartCommand(replServer: PsjReplServer, text: string): P
     console.log('Device restarting');
 
     if (args.hard) {
-        disconnectFromPico(replServer);
+        // Connection broken when hard restart performed. Need to close the connection.
+        await connection.close();
     }
 }

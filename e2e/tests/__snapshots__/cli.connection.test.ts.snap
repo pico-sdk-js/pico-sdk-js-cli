@@ -18,14 +18,6 @@ Connecting to serial device at /dev/ttyACM0
 > "
 `;
 
-exports[`PSJ Connection Scenarios .disconnect disconnects from /dev/ttyACM0: stdOut 1`] = `
-"Connecting ... 
-Connecting to serial device at /dev/ttyACM0
-> .disconnect
-Disconnecting ... 
-> "
-`;
-
 exports[`PSJ Connection Scenarios .exit in REPL quits process: stdOut 1`] = `"> .exit"`;
 
 exports[`PSJ Connection Scenarios .ls shows error when not connected: stdOut 1`] = `
@@ -41,15 +33,19 @@ Connecting to serial device at /dev/ttyACM0
 `;
 
 exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 1`] = `
-"Options:
+"psj
+Starts the REPL server to connect to the Raspberry Pi Pico
+Options:
       --help                Show help                                  [boolean]
       --version             Show version number                        [boolean]
+      --skip-header         Do not output the process header.
+                                                      [boolean] [default: false]
       --log-level, --ll     Sets the log level of the output.
      [string] [choices: "error", "warning", "debug", "trace"] [default: "error"]
-      --auto-connect, --ac  Automatically connects on start.           [boolean]
+      --auto-connect, --ac  Automatically connects on start.
+                                                      [boolean] [default: false]
   -l, --local               Starts a local process to connect to. NOTE: Must set
                             the "PSJ_LOCAL" environment variable to the
                             pico-sdk-js executable.                    [boolean]
-      --skip-header         Do not output the process header.
-                                                      [boolean] [default: false]"
+For more information, check out our docs on https://pico-sdk-js.github.io/"
 `;

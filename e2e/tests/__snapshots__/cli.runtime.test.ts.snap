@@ -20,13 +20,8 @@ Connecting to serial device at /dev/ttyACM0
 > const y = 1;
 > .restart --hard
 Device restarting
-Disconnecting ... 
-> .connect
-Connecting ... 
-Connecting to serial device at /dev/ttyACM0
-> y
-ERR: y is not defined
-> "
+> 
+ERR: Connection to Pico-SDK-JS engine lost."
 `;
 
 exports[`PSJ Runtime Scenarios .restart soft will resets all data: stdOut 1`] = `

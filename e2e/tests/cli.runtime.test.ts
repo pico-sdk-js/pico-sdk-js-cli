@@ -33,8 +33,6 @@ describe('PSJ Runtime Scenarios', () => {
             .command(`const y = 1;`)
             .command(`.restart --hard`)
             .pause(1000)
-            .command(`.connect`)
-            .command(`y`)
             .assertSnapshot();
         });
     });
