@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-      "rootDir": "tests",
       "outDir": "dist_test",
       "strict": true,
       "target": "ESNext",

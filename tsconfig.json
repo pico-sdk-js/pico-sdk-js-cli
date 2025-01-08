@@ -12,6 +12,6 @@
     },
     "compileOnSave": true,
     "exclude": [
-      "e2e/**"
+      "src/e2e/**"
     ]
   }

@@ -13,7 +13,7 @@ export interface LogMessage {
     msg: string;
 }
 
-class PSJLogger {
+export class PSJLogger {
     log(msg: LogMessage) {
         if (process.stdout.clearLine) {
             // clearLine not available in E2E testing

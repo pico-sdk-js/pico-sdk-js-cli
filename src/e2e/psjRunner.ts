@@ -1,8 +1,7 @@
-import {expect} from '@jest/globals';
-import {execaNode, ResultPromise} from 'execa';
+import { expect } from '@jest/globals';
+import { execaNode, ResultPromise } from 'execa';
 
 type PromiseFn = () => PromiseLike<void>;
-
 
 class PsjTestRunner implements PromiseLike<void> {
     private _abortController: AbortController = new AbortController();
@@ -15,23 +14,21 @@ class PsjTestRunner implements PromiseLike<void> {
     public start(args?: string[]): PsjTestRunner {
         this._steps.push(async () => {
             // start();
-            this._proc = execaNode('../dist/index.js', args ?? [], {
+            this._proc = execaNode('./dist/index.js', args ?? [], {
                 cancelSignal: this._abortController.signal,
                 gracefulCancel: true
             });
             this._proc.stderr?.on('data', (data) => {
-
                 const lines: string[] = data.toString().split('\n');
                 if (lines.length > 0) {
                     this._stdOut.push(...lines);
                 }
             });
             this._proc.stdout?.on('data', (data) => {
-
                 const lines: string[] = data.toString().split('\n');
                 if (lines.length > 0) {
                     this._stdOut.push(...lines);
-                    this._isIdle = (lines[lines.length - 1] === '> ');
+                    this._isIdle = lines[lines.length - 1] === '> ';
                 }
             });
             this._proc.on('exit', (code: number) => {
@@ -49,7 +46,6 @@ class PsjTestRunner implements PromiseLike<void> {
     }
 
     public command(cmd: string): PsjTestRunner {
-
         this.waitForIdle();
         this._steps.push(async () => {
             // command();
@@ -108,7 +104,7 @@ class PsjTestRunner implements PromiseLike<void> {
         this.resetStdout();
 
         return this;
-    };
+    }
 
     public assertInStdout(match: RegExp | string): PsjTestRunner {
         this._steps.push(async () => {
@@ -127,11 +123,11 @@ class PsjTestRunner implements PromiseLike<void> {
         });
 
         return this;
-    };
+    }
 
     public assertExit(): PsjTestRunner {
         this.waitForIdle();
-        
+
         this._steps.push(async () => {
             // assertExit();
             expect(this.isClosed()).toBe(true);
