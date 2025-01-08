@@ -6,15 +6,15 @@ export async function killCommand(replServer: PsjReplServer, text: string): Prom
     const yargs = Yargs(text)
         .command('*', 'Kills the currently running script on the device')
         .usage('.kill')
+        .example('.kill', 'kills the currently running script on the device.')
         .fail((msg: string) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
         })
         .strict()
+        .version(false)
         .exitProcess(false);
-
-    yargs.example('.kill', 'kills the currently running script on the device.');
 
     const args = await yargs.parseAsync();
 

@@ -30,16 +30,16 @@ export async function readCommand(replServer: PsjReplServer, text: string): Prom
                 implies: ['local-path']
             }
         })
+        .example('.read file.js --local-path ./myFile.js', 'read from the Pico with the file name "file.js" and save the local "myFile.js".')
+        .example('.read file.js', 'read from the Pico with the file name "file.js" and write to teh screen.')
         .fail((msg: string) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
         })
         .strict()
+        .version(false)
         .exitProcess(false);
-
-    yargs.example('.read file.js --local-path ./myFile.js', 'read from the Pico with the file name "file.js" and save the local "myFile.js".');
-    yargs.example('.read file.js', 'read from the Pico with the file name "file.js" and write to teh screen.');
 
     const args = await yargs.parseAsync();
 

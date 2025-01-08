@@ -6,15 +6,15 @@ export async function lsCommand(replServer: PsjReplServer, text: string): Promis
     const yargs = Yargs(text)
         .command('*', 'List files stored on the connected device')
         .usage('.ls')
+        .example('.ls', 'list files stored on the connected device.')
         .fail((msg: string) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
         })
         .strict()
+        .version(false)
         .exitProcess(false);
-
-    yargs.example('.ls', 'list files stored on the connected device.');
 
     const args = await yargs.parseAsync();
 

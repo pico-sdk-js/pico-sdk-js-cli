@@ -6,6 +6,7 @@ export async function restartCommand(replServer: PsjReplServer, text: string): P
     const yargs = Yargs(text)
         .command('*', 'restart the Pico Device and loaded program')
         .usage('.restart')
+        .example('.restart --hard', 'Perform a hard restart on the connected device.')
         .options({
             hard: {
                 alias: 'h',
@@ -20,9 +21,8 @@ export async function restartCommand(replServer: PsjReplServer, text: string): P
             yargs.showHelp();
         })
         .strict()
+        .version(false)
         .exitProcess(false);
-
-    yargs.example('.restart --hard', 'Perform a hard restart on the connected device.');
 
     const args = await yargs.parseAsync();
 

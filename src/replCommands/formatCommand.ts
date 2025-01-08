@@ -6,6 +6,7 @@ export async function formatCommand(replServer: PsjReplServer, text: string): Pr
     const yargs = Yargs(text)
         .command('*', 'Delete all files and reformat the attached device')
         .usage('.format')
+        .example('.format --confirm', 'delete all files and reformats the attached device without additional confirmation.')
         .options({
             confirm: {
                 alias: 'y',
@@ -20,9 +21,8 @@ export async function formatCommand(replServer: PsjReplServer, text: string): Pr
             yargs.showHelp();
         })
         .strict()
+        .version(false)
         .exitProcess(false);
-
-    yargs.example('.format --confirm', 'delete all files and reformats the attached device without additional confirmation.');
 
     const args = await yargs.parseAsync();
 

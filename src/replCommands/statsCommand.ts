@@ -7,15 +7,15 @@ export async function statsCommand(replServer: PsjReplServer, text: string): Pro
     const yargs = Yargs(text)
         .command('*', 'Get information on the connected device')
         .usage('.stats')
+        .example('.stats', 'get information on the connected device.')
         .fail((msg: string) => {
             failed = true;
             console.error(msg);
             yargs.showHelp();
         })
         .strict()
+        .version(false)
         .exitProcess(false);
-
-    yargs.example('.stats', 'get information on the connected device.');
 
     const args = await yargs.parseAsync();
 
