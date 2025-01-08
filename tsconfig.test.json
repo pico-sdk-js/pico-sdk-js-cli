@@ -3,12 +3,13 @@
       "outDir": "dist_test",
       "strict": true,
       "target": "ESNext",
-      "module": "ESNext",
+      "module": "NodeNext",
       "sourceMap": true,
       "esModuleInterop": true,
-      "moduleResolution": "node",
+      "moduleResolution": "NodeNext",
       "resolveJsonModule": true,
-      "types": ["jest", "node"]
+      "types": ["jest", "node"],
+      "allowImportingTsExtensions": true
     },
     "compileOnSave": true,
   }

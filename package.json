@@ -33,10 +33,10 @@
   "scripts": {
     "start": "npm run build && node dist/index.js",
     "pree2e": "npm run build",
-    "e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --testPathPattern /src/e2e/",
+    "e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --testPathPattern=/src/e2e/ --config=jest.e2e.config.js",
     "e2e:update": "npm run e2e -- --updateSnapshot",
     "pretest": "npm run build",
-    "test": "node node_modules/jest/bin/jest.js --detectOpenHandles --testPathIgnorePatterns /src/e2e/ --testPathPattern /src/",
+    "test": "node node_modules/jest/bin/jest.js --detectOpenHandles --testPathIgnorePatterns=/src/e2e/ --testPathPattern=/src/",
     "pack": "npm run build && npm pack --pack-destination dist",
     "build": "npx eslint ./src && tsc --project tsconfig.json",
     "postbuild": "npm run format-check",
