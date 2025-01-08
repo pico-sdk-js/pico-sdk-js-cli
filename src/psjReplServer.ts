@@ -72,12 +72,12 @@ export class PsjReplServer {
 
         this.server.defineCommand('stats', {
             help: 'Get information on the connected device',
-            action: () => this.wrapCommand(() => statsCommand(this))
+            action: (text: string) => this.wrapCommand(() => statsCommand(this, text))
         });
 
         this.server.defineCommand('ls', {
             help: 'List files stored on the connected device',
-            action: () => this.wrapCommand(() => lsCommand(this))
+            action: (text: string) => this.wrapCommand(() => lsCommand(this, text))
         });
 
         this.server.defineCommand('write', {
