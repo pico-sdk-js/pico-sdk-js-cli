@@ -13,10 +13,22 @@ describe('PSJ Connection Scenarios', () => {
             });
         });
 
-        describe('--auto-connect', () => {
+        describe('--connection', () => {
             it('connects to /dev/ttyACM0', async () => {
                 await psjRunner()
-                .start(['--auto-connect', '--skip-header'])
+                .start(['--skip-header', '--connection', '/dev/ttyACM0'])
+                .assertSnapshot();
+            });
+
+            it('searches for connection', async () => {
+                await psjRunner()
+                .start(['--skip-header', '--connection', 'auto'])
+                .assertSnapshot();
+            });
+
+            it('fails connection to invalid device', async () => {
+                await psjRunner()
+                .start(['--skip-header', '--connection', '/dev/ttyACM999'])
                 .assertSnapshot();
             });
         });
@@ -38,24 +50,6 @@ describe('PSJ Connection Scenarios', () => {
             .start(['--skip-header'])
             .command('.ls')
             .assertSnapshot();
-        });
-    });
-
-    describe('.connect', () => {
-        it('connects to /dev/ttyACM0', async () => {
-            await psjRunner()
-                .start(['--skip-header'])
-                .command('.connect')
-                .assertSnapshot();
-        });
-
-        it('connection failure allows reconnect', async () => {
-            await psjRunner()
-                .start(['--skip-header'])
-                .command('.connect -D /dev/ttyACM99')
-                .command('.connect')
-                .assertSnapshot();
-
         });
     });
 

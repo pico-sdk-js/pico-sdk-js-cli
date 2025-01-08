@@ -11,7 +11,7 @@ describe('PSJ Flash Scenarios', () => {
     afterEach(async () => {
         // Clear flash ram to start from scratch
         await psjRunner()
-        .start(['--auto-connect', '--skip-header'])
+        .start(['--skip-header'])
         .command('.format --confirm');
     });
 
@@ -22,7 +22,7 @@ describe('PSJ Flash Scenarios', () => {
             const fileText = "1234567890";
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write test1.txt --content "${fileText}"`)
             .assertSnapshot();
         });
@@ -32,14 +32,14 @@ describe('PSJ Flash Scenarios', () => {
             const fileText = "1234567890".repeat(1024);
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write test2.txt --content "${fileText}"`)
             .assertSnapshot();
         });
 
         it('will clobber existing file', async () => {
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write test1.txt --content "1234567890"`)
             .command(`.write test1.txt --content "abcdefghij"`)
             .command('.read test1.txt')
@@ -54,7 +54,7 @@ describe('PSJ Flash Scenarios', () => {
             await fs.writeFile(tempFile, fileText);
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write index.js -p "${tempFile}"`)
             .command('.run index.js')
             .assertSnapshot();
@@ -68,7 +68,7 @@ describe('PSJ Flash Scenarios', () => {
             await fs.writeFile(tempFile, fileText);
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write ${tempFile}`)
             .command('.run index.js')
             .assertSnapshot();
@@ -82,7 +82,7 @@ describe('PSJ Flash Scenarios', () => {
             await fs.writeFile(tempFile, fileText);
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write test2.txt --local-path "${tempFile}"`)
             .assertSnapshot();
         }, 150000);
@@ -91,14 +91,14 @@ describe('PSJ Flash Scenarios', () => {
             // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/10
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write .hidden.txt --content "1234567890"`)
             .assertSnapshot();
         });
 
         it('cannot write a file to a subdirectory', async () => {
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write ./dir/foo.txt --content "1234567890"`)
             .assertSnapshot();
         });
@@ -112,7 +112,7 @@ describe('PSJ Flash Scenarios', () => {
             const fileText = "1234567890";
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write test1.txt --content "${fileText}"`)
             .command('.read test1.txt')
             .assertSnapshot();
@@ -123,7 +123,7 @@ describe('PSJ Flash Scenarios', () => {
             const fileText = "1234567890".repeat(1024);
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write test2.txt --content "${fileText}"`)
             .command('.read test2.txt')
             .assertSnapshot();
@@ -132,7 +132,7 @@ describe('PSJ Flash Scenarios', () => {
         it('shows error for non-existing file', async () => {
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command('.read unknown.txt')
             .assertSnapshot();
         });
@@ -141,7 +141,7 @@ describe('PSJ Flash Scenarios', () => {
             // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/10
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write .hidden.txt --content "1234567890"`)
             .command('.read .hidden.txt')
             .assertSnapshot();
@@ -155,7 +155,7 @@ describe('PSJ Flash Scenarios', () => {
             const fileText = "1234567890";
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write test1.txt --content "${fileText}"`)
             .command(`.delete test1.txt`)
             .assertSnapshot();            
@@ -164,7 +164,7 @@ describe('PSJ Flash Scenarios', () => {
         it('shows error for non-existing file', async () => {
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.delete test1.txt`)
             .assertSnapshot();            
         });
@@ -173,7 +173,7 @@ describe('PSJ Flash Scenarios', () => {
             // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/10
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write .hidden.txt --content "1234567890"`)
             .command('.delete .hidden.txt')
             .assertSnapshot();

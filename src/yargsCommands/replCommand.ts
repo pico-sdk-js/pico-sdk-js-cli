@@ -1,10 +1,12 @@
 import { Argv, ArgumentsCamelCase, CommandModule } from 'yargs';
-import { LogLevel } from '../psjLogger';
+import { logger, LogLevel } from '../psjLogger';
 import { PsjReplServer } from '../psjReplServer';
-import { connectToPico } from '../replCommands/connectCommand';
+import { PicoSdkJsEngineConnection } from '../PicoSdkJsEngineConnection';
+import { LocalProcessPicoSdkJsEngineConnection } from '../LocalProcessPicoSdkJsEngineConnection';
+import { SerialPicoSdkJsEngineConnection } from '../SerialPicoSdkJsEngineConnection';
 
 interface IReplCommandOptions {
-    'auto-connect': boolean;
+    connection: string;
     'log-level': string;
     local?: boolean;
 }
@@ -15,6 +17,47 @@ const logLevels: Record<string, LogLevel> = {
     debug: LogLevel.Debug,
     trace: LogLevel.Trace
 };
+
+async function getConnection(connectionString: string): Promise<PicoSdkJsEngineConnection> {
+    let connection: PicoSdkJsEngineConnection | null = null;
+    if (connectionString === 'local') {
+        const localPath = process.env.PSJ_LOCAL;
+        if (!localPath) {
+            throw new Error("Local path not defined. Must set environment variable 'PSJ_LOCAL' to the path of the pico-sdk-js executable.");
+        }
+
+        console.log('Connecting to local process at %s', localPath);
+        connection = new LocalProcessPicoSdkJsEngineConnection(localPath);
+
+        await connection.open();
+    } else if (connectionString === 'auto') {
+        const devices = await SerialPicoSdkJsEngineConnection.list();
+        console.log('Searching for device running Pico-SDK-JS engine...');
+        for (const device of devices) {
+            try {
+                connection = new SerialPicoSdkJsEngineConnection(device);
+                await connection.open();
+
+                console.log('Connected to serial device at %s', device);
+                break;
+            } catch {
+                connection = null;
+            }
+        }
+
+        if (connection === null) {
+            throw new Error(`Valid connection to Pico-SDK-JS not found.`);
+        }
+    } else {
+        const device = connectionString;
+        console.log('Connecting to serial device at %s', device);
+        connection = new SerialPicoSdkJsEngineConnection(device);
+
+        await connection.open();
+    }
+
+    return connection;
+}
 
 class ReplCommand implements CommandModule<IReplCommandOptions, IReplCommandOptions> {
     public readonly aliases = [];
@@ -31,28 +74,25 @@ class ReplCommand implements CommandModule<IReplCommandOptions, IReplCommandOpti
                 description: 'Sets the log level of the output.',
                 default: 'error'
             })
-            .option('auto-connect', {
-                alias: 'ac',
-                type: 'boolean',
-                description: 'Automatically connects on start.',
-                default: false
-            })
-            .option('local', {
-                alias: 'l',
-                type: 'boolean',
-                description: 'Starts a local process to connect to. NOTE: Must set the "PSJ_LOCAL" environment variable to the pico-sdk-js executable.'
+            .option('connection', {
+                alias: 'c',
+                type: 'string',
+                description: 'Specifies the target device to connect to: "local" for a local process, "auto" for the first available device, or a specific serial port path (e.g., /dev/tty.XXX or COM1).',
+                default: 'auto'
             });
     }
 
     public async handler(args: ArgumentsCamelCase<IReplCommandOptions>) {
-        const server = new PsjReplServer();
-        server.setLogLevel(logLevels[args.logLevel]);
+        try {
+            const engineConnection = await getConnection(args.connection);
+            const server = new PsjReplServer(engineConnection);
+            server.setLogLevel(logLevels[args.logLevel]);
 
-        if (args.autoConnect) {
-            await connectToPico(server, args.local ? '--local' : '');
+            server.start();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            logger.logMsg(LogLevel.Error, error.toString());
         }
-
-        server.start();
     }
 }
 

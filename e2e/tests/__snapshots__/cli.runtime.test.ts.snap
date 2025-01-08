@@ -8,15 +8,15 @@ ERR: Script aborted
 `;
 
 exports[`PSJ Runtime Scenarios .kill shows an error when nothing running: stdOut 1`] = `
-"Connecting ... 
-Connecting to serial device at /dev/ttyACM0
+"Searching for device running Pico-SDK-JS engine...
+Connected to serial device at /dev/ttyACM0
 > .kill
 > "
 `;
 
 exports[`PSJ Runtime Scenarios .restart hard will disconnect & reset data: stdOut 1`] = `
-"Connecting ... 
-Connecting to serial device at /dev/ttyACM0
+"Searching for device running Pico-SDK-JS engine...
+Connected to serial device at /dev/ttyACM0
 > const y = 1;
 > .restart --hard
 Device restarting
@@ -25,8 +25,8 @@ ERR: Connection to Pico-SDK-JS engine lost."
 `;
 
 exports[`PSJ Runtime Scenarios .restart soft will resets all data: stdOut 1`] = `
-"Connecting ... 
-Connecting to serial device at /dev/ttyACM0
+"Searching for device running Pico-SDK-JS engine...
+Connected to serial device at /dev/ttyACM0
 > const y = 1;
 > .restart
 Device restarting
@@ -36,8 +36,8 @@ ERR: y is not defined
 `;
 
 exports[`PSJ Runtime Scenarios .run is able to execute an existing file: stdOut 1`] = `
-"Connecting ... 
-Connecting to serial device at /dev/ttyACM0
+"Searching for device running Pico-SDK-JS engine...
+Connected to serial device at /dev/ttyACM0
 > .write test.js --content "print('success!');"
 Writing "static content" to "test.js"
 18 bytes (1 segments) written
@@ -49,8 +49,8 @@ success!
 `;
 
 exports[`PSJ Runtime Scenarios .run shows an error for a non-existing file: stdOut 1`] = `
-"Connecting ... 
-Connecting to serial device at /dev/ttyACM0
+"Searching for device running Pico-SDK-JS engine...
+Connected to serial device at /dev/ttyACM0
 > .run unknown.js
 Executing "unknown.js"
 ERR: File 'unknown.js' not found
@@ -58,8 +58,8 @@ ERR: File 'unknown.js' not found
 `;
 
 exports[`PSJ Runtime Scenarios repl executes javascript: stdOut 1`] = `
-"Connecting ... 
-Connecting to serial device at /dev/ttyACM0
+"Searching for device running Pico-SDK-JS engine...
+Connected to serial device at /dev/ttyACM0
 > const y = 1;
 > y
 1

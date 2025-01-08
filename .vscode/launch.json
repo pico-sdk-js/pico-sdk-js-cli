@@ -31,7 +31,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/index.js",
-            "args": [],
+            "args": ["--connection", "/dev/ttyACM0"],
             "preLaunchTask": "npm: build",
             "console": "integratedTerminal",
             "outFiles": [

@@ -7,7 +7,7 @@ describe('PSJ Runtime Scenarios', () => {
         it('executes javascript', async () => {
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`const y = 1;`)
             .command(`y`)
             .assertSnapshot();
@@ -19,7 +19,7 @@ describe('PSJ Runtime Scenarios', () => {
         it('soft will resets all data', async () => {
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`const y = 1;`)
             .command(`.restart`)
             .command(`y`)
@@ -29,7 +29,7 @@ describe('PSJ Runtime Scenarios', () => {
         it('hard will disconnect & reset data', async () => {
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`const y = 1;`)
             .command(`.restart --hard`)
             .pause(1000)
@@ -42,7 +42,7 @@ describe('PSJ Runtime Scenarios', () => {
         it('will return stats from pico', async () => {
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.stats`)
             .assertInStdout("name            :  pico-sdk-js")
             .assertInStdout(/version\s+:\s+\d+\.\d+\.\d+/)
@@ -64,7 +64,7 @@ describe('PSJ Runtime Scenarios', () => {
         afterEach(async () => {
             // Reset pico after each run
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command('.format --confirm')
             .command(`.restart`);
         });
@@ -74,7 +74,7 @@ describe('PSJ Runtime Scenarios', () => {
             const fileText = "let y=0; while(true) { y++; }";
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write test.js --content "${fileText}"`)
             .command(`.run test.js`)
             .command(`.stats`)
@@ -89,7 +89,7 @@ describe('PSJ Runtime Scenarios', () => {
         it('shows an error when nothing running', async () => {
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.kill`)
             .assertSnapshot();
         });
@@ -101,7 +101,7 @@ describe('PSJ Runtime Scenarios', () => {
         afterEach(async () => {
             // Reset pico after each run
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command('.format --confirm')
             .command(`.restart`);
         });
@@ -111,7 +111,7 @@ describe('PSJ Runtime Scenarios', () => {
             const fileText = "print('success!');";
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write test.js --content "${fileText}"`)
             .command(`.run test.js`)
             .assertSnapshot(); 
@@ -120,7 +120,7 @@ describe('PSJ Runtime Scenarios', () => {
         it('shows an error for a non-existing file', async () => {
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.run unknown.js`)
             .assertSnapshot(); 
         });
@@ -131,7 +131,7 @@ describe('PSJ Runtime Scenarios', () => {
             const fileText = "print('success!');";
 
             await psjRunner()
-            .start(['--auto-connect', '--skip-header'])
+            .start(['--skip-header'])
             .command(`.write .hidden.js --content "${fileText}"`)
             .command(`.run hidden.js`)
             .assertSnapshot(); 

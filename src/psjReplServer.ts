@@ -2,7 +2,6 @@ import repl, { REPLServer } from 'repl';
 import { Context } from 'vm';
 import { CommandError, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
 import { LogLevel, LogMessage, logger } from './psjLogger';
-import { connectToPico } from './replCommands/connectCommand';
 import { lsCommand } from './replCommands/lsCommand';
 import { statsCommand } from './replCommands/statsCommand';
 import { writeCommand } from './replCommands/writeCommand';
@@ -14,35 +13,25 @@ import { killCommand } from './replCommands/killCommand';
 import { runCommand } from './replCommands/runCommand';
 
 export class PsjReplServer {
-    private connection: PicoSdkJsEngineConnection | null = null;
+    private connection: PicoSdkJsEngineConnection | null;
     private maxLogLevel: LogLevel = LogLevel.Error;
     private server: REPLServer | null = null;
     private commandInProgress = false;
 
-    constructor() {}
+    constructor(connection: PicoSdkJsEngineConnection) {
+        this.connection = connection;
+        this.connection.onLog = (m) => {
+            this.logFn(m);
+        };
+        this.connection.onClose = () => {
+            logger.logMsg(LogLevel.Error, 'Connection to Pico-SDK-JS engine lost.');
+            this.connection = null;
+            this.close();
+        };
+    }
 
     public getConnection(): PicoSdkJsEngineConnection | null {
         return this.connection;
-    }
-
-    public setConnection(connection: PicoSdkJsEngineConnection | null): void {
-        if (this.connection) {
-            this.connection.onLog = () => {};
-            this.connection.onClose = () => {};
-            this.connection = null;
-        }
-
-        if (connection) {
-            this.connection = connection;
-            this.connection.onLog = (m) => {
-                this.logFn(m);
-            };
-            this.connection.onClose = () => {
-                logger.logMsg(LogLevel.Error, 'Connection to Pico-SDK-JS engine lost.');
-                this.setConnection(null);
-                this.close();
-            };
-        }
     }
 
     public async close() {
@@ -51,7 +40,6 @@ export class PsjReplServer {
 
             const closePromise = this.connection?.close();
             this.server = null;
-            this.connection = null;
 
             await closePromise;
         }
@@ -81,11 +69,6 @@ export class PsjReplServer {
         delete commands.load;
         delete commands.save;
         delete commands.clear;
-
-        this.server.defineCommand('connect', {
-            help: 'Connect to a Pico running Pico-Sdk-JS',
-            action: (text: string) => this.wrapCommand(() => connectToPico(this, text))
-        });
 
         this.server.defineCommand('stats', {
             help: 'Get information on the connected device',
