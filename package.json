@@ -43,7 +43,7 @@
     "prepare": "npm run build",
     "format": "prettier --write \"./src/**/*.{ts,js,json}\"",
     "format-check": "prettier --check \"./src/**/*.{ts,js,json}\"",
-    "beachball:change": "beachball change",
+    "beachball:change": "beachball change --package @pico-sdk-js/cli",
     "beachball:check": "beachball check",
     "beachball:publish": "beachball publish --access public"
   },
