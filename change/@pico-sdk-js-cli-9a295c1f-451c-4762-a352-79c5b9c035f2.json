@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Removing --version from repl commands",
+  "packageName": "@pico-sdk-js/cli",
+  "email": "jt000@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
