@@ -19,8 +19,17 @@ jobs:
     - name: Run npm ci Command
       run: npm ci
 
+    - name: Run ESlint
+      run: npm run eslint
+
+    - name: Run build
+      run: npm run build:only
+
+    - name: Run prettier
+      run: npm run format-check
+
     - name: Run unit tests
-      run: npm test
+      run: npm run test:only
 
     - name: Check for changefiles
       run: npm run beachball:check
