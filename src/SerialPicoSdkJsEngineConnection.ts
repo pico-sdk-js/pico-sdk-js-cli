@@ -6,9 +6,9 @@ import assert from 'assert';
 const errorRegex = /!#(?<error>[a-zA-Z0-9\-_]+)#!/;
 
 export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
-    serialPort: SerialPort | null = null;
-    isConnected = false;
-    readonly decoder: TextDecoder = new TextDecoder();
+    private serialPort: SerialPort | null = null;
+    private isConnected = false;
+    private readonly decoder: TextDecoder = new TextDecoder();
 
     constructor(public readonly device: string) {
         super();
