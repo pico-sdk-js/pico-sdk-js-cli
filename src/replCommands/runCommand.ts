@@ -7,6 +7,7 @@ export async function runCommand(replServer: PsjReplServer, text: string): Promi
     const yargs = Yargs(text)
         .command('* <remote-path>', 'Execute a file from the connected device')
         .usage('.run <remote-path>')
+        .example('.run file.js', 'Execute a file stored on the Pico with the file name "file.js".')
         .positional('remote-path', {
             alias: 'r',
             type: 'string',
@@ -20,9 +21,8 @@ export async function runCommand(replServer: PsjReplServer, text: string): Promi
             yargs.showHelp();
         })
         .strict()
+        .version(false)
         .exitProcess(false);
-
-    yargs.example('.run file.js', 'Execute a file stored on the Pico with the file name "file.js".');
 
     const args = await yargs.parseAsync();
 

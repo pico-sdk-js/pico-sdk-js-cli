@@ -7,6 +7,7 @@ export async function deleteCommand(replServer: PsjReplServer, text: string): Pr
     const yargs = Yargs(text)
         .command('* <remote-path>', 'Delete a file from the connected device')
         .usage('.delete <remote-path>')
+        .example('.delete file.js', 'deletes from the Pico with the file name "file.js".')
         .positional('remote-path', {
             alias: 'r',
             type: 'string',
@@ -20,9 +21,8 @@ export async function deleteCommand(replServer: PsjReplServer, text: string): Pr
             yargs.showHelp();
         })
         .strict()
+        .version(false)
         .exitProcess(false);
-
-    yargs.example('.delete file.js', 'deletes from the Pico with the file name "file.js".');
 
     const args = await yargs.parseAsync();
 

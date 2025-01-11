@@ -1,29 +1,49 @@
 import { SerialPort } from 'serialport';
-import { CommandRequest, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
-import { LogLevel } from './psjLogger';
+import { CommandRequest, PicoSdkJsEngineConnection, StatsCommandResponse } from './PicoSdkJsEngineConnection';
+import { logger, LogLevel } from './psjLogger';
 import assert from 'assert';
 
 const errorRegex = /!#(?<error>[a-zA-Z0-9\-_]+)#!/;
 
 export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
-    serialPort: SerialPort | null = null;
-    readonly decoder: TextDecoder = new TextDecoder();
+    private serialPort: SerialPort | null = null;
+    private isConnected = false;
+    private readonly decoder: TextDecoder = new TextDecoder();
 
     constructor(public readonly device: string) {
         super();
+    }
+
+    public static async list(): Promise<string[]> {
+        const ports = await SerialPort.list();
+        return ports.map((p) => p.path);
     }
 
     public isOpen(): boolean {
         return this.serialPort !== null;
     }
 
-    public open(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            if (this.serialPort !== null) {
-                reject('Connection already established');
-                return;
-            }
+    public async open(): Promise<void> {
+        if (this.serialPort !== null) {
+            throw 'Connection already established';
+        }
 
+        await this.openInternal();
+
+        let stats: StatsCommandResponse;
+        try {
+            stats = await this.stats();
+        } catch (error) {
+            this.close();
+            throw 'Pico-SDK-JS not running on device';
+        }
+
+        this.onLog({ level: LogLevel.Trace, msg: `Connection opened to ${stats.value['version']}` });
+        this.isConnected = true;
+    }
+
+    private openInternal(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             const serialPort = new SerialPort({
                 path: this.device,
                 baudRate: 115200,
@@ -90,8 +110,15 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
 
     public async close(): Promise<void> {
         if (this.serialPort !== null) {
-            const quitCmd = new CommandRequest('quit');
-            await this.sendCommand(quitCmd);
+            if (this.isConnected) {
+                try {
+                    const quitCmd = new CommandRequest('quit');
+                    await this.sendCommand(quitCmd);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } catch (error: any) {
+                    logger.logMsg(LogLevel.Error, error.toString());
+                }
+            }
 
             this.serialPort.close();
             this.serialPort = null;

@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PSJ Connection Scenarios .exit in REPL quits process: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to serial device at /dev/ttyACM0
+> .exit
+ERR: Connection to Pico-SDK-JS engine lost."
+`;
+
+exports[`PSJ Connection Scenarios .ls shows error when not connected: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to serial device at /dev/ttyACM0
+> .ls
+total 0 file(s)
+> "
+`;
+
+exports[`PSJ Connection Scenarios command line args --connection connects to /dev/ttyACM0: stdOut 1`] = `
+"Connecting to serial device at /dev/ttyACM0
+> "
+`;
+
+exports[`PSJ Connection Scenarios command line args --connection fails connection to invalid device: stdOut 1`] = `
+"Connecting to serial device at /dev/ttyACM999
+ERR: Error: Error: No such file or directory, cannot open /dev/ttyACM999"
+`;
+
+exports[`PSJ Connection Scenarios command line args --connection searches for connection: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to serial device at /dev/ttyACM0
+> "
+`;
+
+exports[`PSJ Connection Scenarios command line args --help shows help: stdOut 1`] = `
+"psj
+Starts the REPL server to connect to the Raspberry Pi Pico
+Options:
+      --help             Show help                                     [boolean]
+      --version          Show version number                           [boolean]
+      --skip-header      Do not output the process header.
+                                                      [boolean] [default: false]
+      --log-level, --ll  Sets the log level of the output.
+     [string] [choices: "error", "warning", "debug", "trace"] [default: "error"]
+  -c, --connection       Specifies the target device to connect to: "local" for
+                         a local process, "auto" for the first available device,
+                         or a specific serial port path (e.g., /dev/tty.XXX or
+                         COM1).                       [string] [default: "auto"]
+For more information, check out our docs on https://pico-sdk-js.github.io/"
+`;

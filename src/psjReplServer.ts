@@ -2,45 +2,46 @@ import repl, { REPLServer } from 'repl';
 import { Context } from 'vm';
 import { CommandError, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
 import { LogLevel, LogMessage, logger } from './psjLogger';
-import { connectToPico } from './commands/connectCommand';
-import { disconnectFromPico } from './commands/disconnectCommand';
-import { lsCommand } from './commands/lsCommand';
-import { statsCommand } from './commands/statsCommand';
-import { writeCommand } from './commands/writeCommand';
-import { readCommand } from './commands/readCommand';
-import { deleteCommand } from './commands/deleteCommand';
-import { formatCommand } from './commands/formatCommand';
-import { restartCommand } from './commands/restartCommand';
-import { killCommand } from './commands/killCommand';
-import { runCommand } from './commands/runCommand';
+import { lsCommand } from './replCommands/lsCommand';
+import { statsCommand } from './replCommands/statsCommand';
+import { writeCommand } from './replCommands/writeCommand';
+import { readCommand } from './replCommands/readCommand';
+import { deleteCommand } from './replCommands/deleteCommand';
+import { formatCommand } from './replCommands/formatCommand';
+import { restartCommand } from './replCommands/restartCommand';
+import { killCommand } from './replCommands/killCommand';
+import { runCommand } from './replCommands/runCommand';
 
 export class PsjReplServer {
-    private connection: PicoSdkJsEngineConnection | null = null;
+    private connection: PicoSdkJsEngineConnection | null;
     private maxLogLevel: LogLevel = LogLevel.Error;
     private server: REPLServer | null = null;
     private commandInProgress = false;
 
-    constructor() {}
+    constructor(connection: PicoSdkJsEngineConnection) {
+        this.connection = connection;
+        this.connection.onLog = (m) => {
+            this.logFn(m);
+        };
+        this.connection.onClose = () => {
+            logger.logMsg(LogLevel.Error, 'Connection to Pico-SDK-JS engine lost.');
+            this.connection = null;
+            this.close();
+        };
+    }
 
     public getConnection(): PicoSdkJsEngineConnection | null {
         return this.connection;
     }
 
-    public setConnection(connection: PicoSdkJsEngineConnection | null): void {
-        if (this.connection) {
-            this.connection.onLog = () => {};
-            this.connection.onClose = () => {};
-            this.connection = null;
-        }
+    public async close() {
+        if (this.server) {
+            this.server.close();
 
-        if (connection) {
-            this.connection = connection;
-            this.connection.onLog = (m) => {
-                this.logFn(m);
-            };
-            this.connection.onClose = () => {
-                this.setConnection(null);
-            };
+            const closePromise = this.connection?.close();
+            this.server = null;
+
+            await closePromise;
         }
     }
 
@@ -54,11 +55,7 @@ export class PsjReplServer {
         });
 
         this.server.on('exit', async () => {
-            const closePromise = this.connection?.close();
-            this.server = null;
-            this.connection = null;
-
-            await closePromise;
+            await this.close();
         });
 
         this.server.on('reset', async () => this.wrapCommand(() => restartCommand(this, '')));
@@ -73,24 +70,14 @@ export class PsjReplServer {
         delete commands.save;
         delete commands.clear;
 
-        this.server.defineCommand('connect', {
-            help: 'Connect to a Pico running Pico-Sdk-JS',
-            action: (text: string) => this.wrapCommand(() => connectToPico(this, text))
-        });
-
-        this.server.defineCommand('disconnect', {
-            help: 'Disconnect a Pico running Pico-Sdk-JS',
-            action: () => this.wrapCommand(() => disconnectFromPico(this))
-        });
-
         this.server.defineCommand('stats', {
             help: 'Get information on the connected device',
-            action: () => this.wrapCommand(() => statsCommand(this))
+            action: (text: string) => this.wrapCommand(() => statsCommand(this, text))
         });
 
         this.server.defineCommand('ls', {
             help: 'List files stored on the connected device',
-            action: () => this.wrapCommand(() => lsCommand(this))
+            action: (text: string) => this.wrapCommand(() => lsCommand(this, text))
         });
 
         this.server.defineCommand('write', {

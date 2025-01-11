@@ -4,14 +4,15 @@
       "outDir": "dist",
       "strict": true,
       "target": "es2022",
-      "module": "commonjs",
+      "module": "NodeNext",
       "sourceMap": true,
       "esModuleInterop": true,
-      "moduleResolution": "node",
+      "moduleResolution": "NodeNext",
       "resolveJsonModule": true
     },
     "compileOnSave": true,
     "exclude": [
-      "e2e/**"
+      "src/e2e/**",
+      "**/*.test.ts"
     ]
   }

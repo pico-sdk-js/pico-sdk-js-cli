@@ -93,6 +93,8 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
     const yargs = Yargs(text)
         .command('* <remote-path>', 'Write a file to the connected device')
         .usage('.write <remote-path>')
+        .example('.write file.js --local-path ./myFile.js', 'write the local "myFile.js" to the Pico with the file name "file.js".')
+        .example('.write /tmp/file.js', 'write the local "/tmp/file.js" to the Pico with the file name "file.js".')
         .positional('remote-path', {
             alias: 'r',
             type: 'string',
@@ -120,10 +122,8 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
             yargs.showHelp();
         })
         .strict()
+        .version(false)
         .exitProcess(false);
-
-    yargs.example('.write file.js --local-path ./myFile.js', 'write the local "myFile.js" to the Pico with the file name "file.js".');
-    yargs.example('.write /tmp/file.js', 'write the local "/tmp/file.js" to the Pico with the file name "file.js".');
 
     const args = await yargs.parseAsync();
 

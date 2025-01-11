@@ -16,8 +16,23 @@ jobs:
       with:
         registry-url: 'https://registry.npmjs.org'
 
-    - name: Pull NPM Packages
-      run: npm install
+    - name: FAIL -- NOTE that releasing via Actions is currently disabled
+      run: exit 1
+      
+    - name: Run npm ci Command
+      run: npm ci
+
+    - name: Run ESlint
+      run: npm run eslint
+
+    - name: Run build
+      run: npm run build:only
+
+    - name: Run prettier
+      run: npm run format-check
+
+    - name: Run unit tests
+      run: npm run test:only
 
     - name: Create changelog & bump version
       run: |

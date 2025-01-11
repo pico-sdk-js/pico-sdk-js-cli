@@ -37,6 +37,7 @@ export class CommandError extends Error {
 interface CommandResponseHandler {
     resolve: (value: CommandResponse | PromiseLike<CommandResponse>) => void;
     reject: (reason?: unknown) => void;
+    timeoutId: NodeJS.Timeout;
 }
 
 export interface WriteCommandOptions {
@@ -69,26 +70,6 @@ export abstract class PicoSdkJsEngineConnection {
     public abstract open(): Promise<void>;
     public abstract close(): Promise<void>;
     public abstract isOpen(): boolean;
-
-    protected sendCommand<T = CommandResponse>(cmd: CommandRequest): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            if (!this.isOpen()) {
-                reject('Connection not open');
-                return;
-            }
-
-            this.etags[cmd.etag] = {
-                /* eslint-disable-next-line @typescript-eslint/no-explicit-any --
-                 * Any is required below in order to allow conversions from CommandResponse<object> to
-                 * more specific CommandResponse types like LsCommandResponse.
-                 **/
-                resolve: resolve as any,
-                reject: reject
-            };
-
-            this.sendCommandBase(cmd);
-        });
-    }
 
     protected abstract sendCommandBase(cmd: CommandRequest): void;
 
@@ -150,6 +131,37 @@ export abstract class PicoSdkJsEngineConnection {
         return this.sendCommand(cmd);
     }
 
+    protected sendCommand<T = CommandResponse>(cmd: CommandRequest, timeout = 2000): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            if (!this.isOpen()) {
+                reject('Connection not open');
+                return;
+            }
+
+            this.etags[cmd.etag] = {
+                /* eslint-disable-next-line @typescript-eslint/no-explicit-any --
+                 * Any is required below in order to allow conversions from CommandResponse<object> to
+                 * more specific CommandResponse types like LsCommandResponse.
+                 **/
+                resolve: resolve as any,
+                reject: reject,
+                timeoutId: setTimeout(() => {
+                    const handler = this.etags[cmd.etag];
+                    if (handler) {
+                        /* eslint-disable-next-line @typescript-eslint/no-dynamic-delete --
+                         * A delete is required here due to cmdResponse.etag being a dynamic value
+                         * and already confirmed to exist.
+                         **/
+                        delete this.etags[cmd.etag];
+                        handler.reject(`TIMEOUT ERROR: Command response took over ${timeout}ms`);
+                    }
+                }, timeout)
+            };
+
+            this.sendCommandBase(cmd);
+        });
+    }
+
     protected processError(errorMsg: string): void {
         for (const etag in this.etags) {
             const handler = this.etags[etag];
@@ -160,6 +172,7 @@ export abstract class PicoSdkJsEngineConnection {
                  * and already confirmed to exist.
                  **/
                 delete this.etags[etag];
+                clearTimeout(handler.timeoutId);
                 handler.reject(`REMOTE ERROR: ${errorMsg}`);
             }
         }
@@ -184,6 +197,8 @@ export abstract class PicoSdkJsEngineConnection {
                  * and already confirmed to exist.
                  **/
                 delete this.etags[cmdResponse.etag];
+
+                clearTimeout(handler.timeoutId);
 
                 if (CommandError.isCommandError(cmdResponse.value)) {
                     handler.reject(cmdResponse.value);

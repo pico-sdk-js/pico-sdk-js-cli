@@ -1,13 +1,12 @@
-import {expect} from '@jest/globals';
-import {execaNode, ResultPromise} from 'execa';
+import { expect } from '@jest/globals';
+import { execaNode, ResultPromise } from 'execa';
 
 type PromiseFn = () => PromiseLike<void>;
 
-
 class PsjTestRunner implements PromiseLike<void> {
     private _abortController: AbortController = new AbortController();
-    private _proc?: ResultPromise;
-    private _exitCode?: number;
+    private _proc: ResultPromise | null = null;
+    private _exitCode: number | null = null;
     private _isIdle = false;
     private _stdOut: string[] = [];
     private _steps: PromiseFn[] = [];
@@ -15,29 +14,25 @@ class PsjTestRunner implements PromiseLike<void> {
     public start(args?: string[]): PsjTestRunner {
         this._steps.push(async () => {
             // start();
-            this._proc = execaNode('../dist/index.js', args ?? [], {
+            this._proc = execaNode('./dist/index.js', args ?? [], {
                 cancelSignal: this._abortController.signal,
                 gracefulCancel: true
             });
             this._proc.stderr?.on('data', (data) => {
-
                 const lines: string[] = data.toString().split('\n');
                 if (lines.length > 0) {
                     this._stdOut.push(...lines);
-                    this._isIdle = (lines[lines.length - 1] === '> ');
                 }
             });
             this._proc.stdout?.on('data', (data) => {
-
                 const lines: string[] = data.toString().split('\n');
                 if (lines.length > 0) {
                     this._stdOut.push(...lines);
-                    this._isIdle = (lines[lines.length - 1] === '> ');
+                    this._isIdle = lines[lines.length - 1] === '> ';
                 }
             });
             this._proc.on('exit', (code: number) => {
                 this._exitCode = code;
-                this._proc = undefined;
             });
         });
 
@@ -46,8 +41,11 @@ class PsjTestRunner implements PromiseLike<void> {
         return this;
     }
 
-    public command(cmd: string): PsjTestRunner {
+    public isClosed(): boolean {
+        return this._exitCode !== null;
+    }
 
+    public command(cmd: string): PsjTestRunner {
         this.waitForIdle();
         this._steps.push(async () => {
             // command();
@@ -72,7 +70,7 @@ class PsjTestRunner implements PromiseLike<void> {
                 }
 
                 const intervalId = setInterval(() => {
-                    if (!this._proc || this._isIdle) {
+                    if (this.isClosed() || this._isIdle) {
                         clearInterval(intervalId);
                         resolve();
                     }
@@ -106,7 +104,7 @@ class PsjTestRunner implements PromiseLike<void> {
         this.resetStdout();
 
         return this;
-    };
+    }
 
     public assertInStdout(match: RegExp | string): PsjTestRunner {
         this._steps.push(async () => {
@@ -125,14 +123,14 @@ class PsjTestRunner implements PromiseLike<void> {
         });
 
         return this;
-    };
+    }
 
     public assertExit(): PsjTestRunner {
         this.waitForIdle();
-        
+
         this._steps.push(async () => {
             // assertExit();
-            expect(this._proc).toBeUndefined();
+            expect(this.isClosed()).toBe(true);
         });
 
         return this;
@@ -158,27 +156,23 @@ class PsjTestRunner implements PromiseLike<void> {
                     await step();
                 }
             }
-            
-            if (this._proc) {
-                this.command('.exit');
-            }
-
-            this.assertExitCode(0);
-
-            while (this._steps.length > 0) {
-                const step = this._steps.shift();
-                if (step) {
-                    await step();
-                }
-            }
-            
-            if (this._proc) {
-                this._proc.kill();
-            }
 
             return onfulfilled?.call(this) as TResult1;
         } catch (error) {
             return onrejected?.call(this, [error]) as TResult2;
+        } finally {
+            if (!this.isClosed()) {
+                this._abortController.abort();
+
+                try {
+                    await this._proc;
+                } catch (e) {
+                    // Ignore any errors
+                    // console.trace(e);
+                }
+            }
+
+            this._proc = null;
         }
     }
 }
