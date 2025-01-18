@@ -1,5 +1,7 @@
 import { randomInt } from 'crypto';
 import { LogMessage } from './psjLogger';
+import Version from './version';
+import pkg from '../package.json';
 
 export class CommandRequest<T = object> {
     public cmd: string;
@@ -59,6 +61,11 @@ export interface DeleteCommandOptions {
     path: string;
 }
 
+export interface ConnectionInfo {
+    device: string;
+    version: Version;
+}
+
 export type LsCommandResponse = CommandResponse<{ name: string; size: number }[]>;
 export type StatsCommandResponse = CommandResponse<Record<string, object>>;
 export type WriteCommandResponse = CommandResponse<{ bytes: number }>;
@@ -66,18 +73,51 @@ export type ReadCommandResponse = CommandResponse<{ size: number; seg: number; n
 
 export abstract class PicoSdkJsEngineConnection {
     private etags: Record<number, CommandResponseHandler> = {};
+    protected isConnected = false;
 
-    public abstract open(): Promise<void>;
     public abstract close(): Promise<void>;
     public abstract isOpen(): boolean;
 
     protected abstract sendCommandBase(cmd: CommandRequest): void;
+    protected abstract openInternal(): Promise<Pick<ConnectionInfo, 'device'>>;
 
     // eslint @typescript-eslint/no-empty-function: "ignore"
     public onLog: (log: LogMessage) => void = () => {};
 
     // eslint @typescript-eslint/no-empty-function: "ignore"
     public onClose: () => void = () => {};
+
+    public async open(): Promise<ConnectionInfo> {
+        const minRequiredVersion = new Version(pkg.version);
+
+        const connectionInfo: ConnectionInfo = {
+            device: (await this.openInternal()).device,
+            version: new Version('999.999.999')
+        };
+
+        let stats: StatsCommandResponse;
+        try {
+            stats = await this.stats();
+            if ('version' in stats.value) {
+                const verString = stats.value['version'];
+                if (typeof verString === 'string') {
+                    connectionInfo.version = new Version(verString);
+                }
+            }
+        } catch (error) {
+            this.close();
+            throw 'Pico-SDK-JS not running on device';
+        }
+
+        if (!minRequiredVersion.isCompatible(connectionInfo.version)) {
+            this.close();
+            throw `Pico-SDK-JS Engine v${connectionInfo.version} is not compatible with this version of the CLI which requires v${minRequiredVersion}.`;
+        }
+
+        this.isConnected = true;
+
+        return connectionInfo;
+    }
 
     public exec(cmd: string): Promise<CommandResponse> {
         const execCmd = new CommandRequest<{ code: string }>('exec');

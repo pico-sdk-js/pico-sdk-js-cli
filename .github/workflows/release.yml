@@ -32,7 +32,7 @@ jobs:
       run: npm run format-check
 
     - name: Run unit tests
-      run: npm run test:only
+      run: npm run test
 
     - name: Create changelog & bump version
       run: |

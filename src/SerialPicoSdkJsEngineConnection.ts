@@ -1,5 +1,5 @@
 import { SerialPort } from 'serialport';
-import { CommandRequest, PicoSdkJsEngineConnection, StatsCommandResponse } from './PicoSdkJsEngineConnection';
+import { CommandRequest, ConnectionInfo, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
 import { logger, LogLevel } from './psjLogger';
 import assert from 'assert';
 
@@ -7,7 +7,6 @@ const errorRegex = /!#(?<error>[a-zA-Z0-9\-_]+)#!/;
 
 export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
     private serialPort: SerialPort | null = null;
-    private isConnected = false;
     private readonly decoder: TextDecoder = new TextDecoder();
 
     constructor(public readonly device: string) {
@@ -23,27 +22,13 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
         return this.serialPort !== null;
     }
 
-    public async open(): Promise<void> {
-        if (this.serialPort !== null) {
-            throw 'Connection already established';
-        }
+    protected openInternal(): Promise<Pick<ConnectionInfo, 'device'>> {
+        return new Promise<Pick<ConnectionInfo, 'device'>>((resolve, reject) => {
+            if (this.serialPort !== null) {
+                reject('Connection already established');
+                return;
+            }
 
-        await this.openInternal();
-
-        let stats: StatsCommandResponse;
-        try {
-            stats = await this.stats();
-        } catch (error) {
-            this.close();
-            throw 'Pico-SDK-JS not running on device';
-        }
-
-        this.onLog({ level: LogLevel.Trace, msg: `Connection opened to ${stats.value['version']}` });
-        this.isConnected = true;
-    }
-
-    private openInternal(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
             const serialPort = new SerialPort({
                 path: this.device,
                 baudRate: 115200,
@@ -101,7 +86,7 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
                     });
                 });
 
-                resolve();
+                resolve({ device: this.device });
             });
 
             serialPort.open();
