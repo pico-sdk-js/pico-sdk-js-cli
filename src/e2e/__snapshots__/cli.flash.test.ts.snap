@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`PSJ Flash Scenarios .delete cannot delete a hidden file: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
+> .delete .hidden.txt
+ERR: Hidden files are protected from reading, writing, or deleting
+> "
+`;
+
 exports[`PSJ Flash Scenarios .delete is able to delete an existing file: stdOut 1`] = `
 "Searching for device running Pico-SDK-JS engine...
 Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
@@ -16,6 +24,18 @@ exports[`PSJ Flash Scenarios .delete shows error for non-existing file: stdOut 1
 Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
 > .delete test1.txt
 ERR: File 'test1.txt' not found
+> "
+`;
+
+exports[`PSJ Flash Scenarios .read cannot read a hidden file: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
+> .write .hidden.txt --content "1234567890"
+Writing "static content" to ".hidden.txt"
+ERR: Hidden files are protected from reading, writing, or deleting
+> .read .hidden.txt
+Reading from ".hidden.txt"
+ERR: Hidden files are protected from reading, writing, or deleting
 > "
 `;
 
@@ -61,6 +81,15 @@ Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
 Writing "static content" to "dir/foo.txt"
 ERR: Error opening 'dir/foo.txt' for write: -2
 ERR: Error writing to 'dir/foo.txt'
+> "
+`;
+
+exports[`PSJ Flash Scenarios .write cannot write a hidden file: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
+> .write .hidden.txt --content "1234567890"
+Writing "static content" to ".hidden.txt"
+ERR: Hidden files are protected from reading, writing, or deleting
 > "
 `;
 

@@ -48,6 +48,15 @@ success!
 > "
 `;
 
+exports[`PSJ Runtime Scenarios .run shows an error for a hidden file: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
+> .run .hidden.js
+Executing ".hidden.js"
+ERR: Hidden files are protected from reading, writing, or deleting
+> "
+`;
+
 exports[`PSJ Runtime Scenarios .run shows an error for a non-existing file: stdOut 1`] = `
 "Searching for device running Pico-SDK-JS engine...
 Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'

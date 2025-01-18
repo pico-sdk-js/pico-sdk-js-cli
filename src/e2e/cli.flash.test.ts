@@ -1,4 +1,4 @@
-import { describe, afterEach, it, xit } from '@jest/globals';
+import { describe, afterEach, it } from '@jest/globals';
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -92,9 +92,7 @@ describe('PSJ Flash Scenarios', () => {
                 .assertSnapshot();
         }, 150000);
 
-        xit.failing('cannot write a hidden file', async () => {
-            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/10
-
+        it('cannot write a hidden file', async () => {
             // prettier-ignore
             await psjRunner()
                 .start(['--skip-header'])
@@ -144,9 +142,7 @@ describe('PSJ Flash Scenarios', () => {
                 .assertSnapshot();
         });
 
-        xit.failing('cannot read a hidden file', async () => {
-            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/10
-
+        it('cannot read a hidden file', async () => {
             // prettier-ignore
             await psjRunner()
                 .start(['--skip-header'])
@@ -177,13 +173,10 @@ describe('PSJ Flash Scenarios', () => {
                 .assertSnapshot();
         });
 
-        xit.failing('cannot delete a hidden file', async () => {
-            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/10
-
+        it('cannot delete a hidden file', async () => {
             // prettier-ignore
             await psjRunner()
                 .start(['--skip-header'])
-                .command(`.write .hidden.txt --content "1234567890"`)
                 .command('.delete .hidden.txt')
                 .assertSnapshot();
         });

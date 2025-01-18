@@ -1,4 +1,4 @@
-import { describe, afterEach, it, xit } from '@jest/globals';
+import { describe, afterEach, it } from '@jest/globals';
 import psjRunner from './psjRunner';
 
 describe('PSJ Runtime Scenarios', () => {
@@ -122,16 +122,11 @@ describe('PSJ Runtime Scenarios', () => {
                 .assertSnapshot();
         });
 
-        xit.failing('shows an error for a hidden file', async () => {
-            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/10
-
-            const fileText = "print('success!');";
-
+        it('shows an error for a hidden file', async () => {
             // prettier-ignore
             await psjRunner()
                 .start(['--skip-header'])
-                .command(`.write .hidden.js --content "${fileText}"`)
-                .command(`.run hidden.js`)
+                .command(`.run .hidden.js`)
                 .assertSnapshot();
         });
     });
