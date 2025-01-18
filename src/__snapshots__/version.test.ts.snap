@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Version constructor throws for invalid version string 1`] = `"string is not valid semantic version: 1"`;
+
+exports[`Version toString throws when passed an invalid parts 1`] = `"Invalid arguement: parts"`;

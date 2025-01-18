@@ -1,6 +1,7 @@
 import { randomInt } from 'crypto';
 import { LogMessage } from './psjLogger';
 import Version from './version';
+import runtimeConfig from './runtimeConfig.json';
 
 export class CommandRequest<T = object> {
     public cmd: string;
@@ -87,6 +88,8 @@ export abstract class PicoSdkJsEngineConnection {
     public onClose: () => void = () => {};
 
     public async open(): Promise<ConnectionInfo> {
+        const minRequiredVersion = new Version(runtimeConfig.minimumEngineVersion);
+
         const connectionInfo: ConnectionInfo = {
             device: (await this.openInternal()).device,
             version: new Version('999.999.999')
@@ -104,6 +107,11 @@ export abstract class PicoSdkJsEngineConnection {
         } catch (error) {
             this.close();
             throw 'Pico-SDK-JS not running on device';
+        }
+
+        if (!minRequiredVersion.isCompatible(connectionInfo.version)) {
+            this.close();
+            throw `Pico-SDK-JS Engine v${connectionInfo.version} is not compatible with this version of the CLI which requires v${minRequiredVersion}.`;
         }
 
         this.isConnected = true;

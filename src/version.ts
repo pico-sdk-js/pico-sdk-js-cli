@@ -23,7 +23,15 @@ export default class Version {
         return true;
     }
 
-    toString(): string {
-        return `${this.major}.${this.minor}.${this.patch}`;
+    toString(parts = 3): string {
+        if (parts === 3) {
+            return `${this.major}.${this.minor}.${this.patch}`;
+        } else if (parts === 2) {
+            return `${this.major}.${this.minor}`;
+        } else if (parts === 1) {
+            return `${this.major}`;
+        }
+
+        throw new Error('Invalid arguement: parts');
     }
 }

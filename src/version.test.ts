@@ -15,7 +15,7 @@ describe('Version', () => {
         it('throws for invalid version string', () => {
             expect(() => {
                 new Version('1');
-            }).toThrow(Error);
+            }).toThrowErrorMatchingSnapshot();
         });
     });
 
@@ -25,6 +25,33 @@ describe('Version', () => {
 
             const testString = `[${version}]`;
             expect(testString).toBe('[1.2.3]');
+        });
+
+        it('returns 3 parts by default', () => {
+            const version = new Version('1.2.3');
+            expect(version.toString()).toBe('1.2.3');
+        });
+
+        it('returns 3 parts when passed 3', () => {
+            const version = new Version('1.2.3');
+            expect(version.toString(3)).toBe('1.2.3');
+        });
+
+        it('returns 2 parts when passed 2', () => {
+            const version = new Version('1.2.3');
+            expect(version.toString(2)).toBe('1.2');
+        });
+
+        it('returns 1 part when passed 1', () => {
+            const version = new Version('1.2.3');
+            expect(version.toString(1)).toBe('1');
+        });
+
+        it('throws when passed an invalid parts', () => {
+            const version = new Version('1.2.3');
+            expect(() => {
+                version.toString(0);
+            }).toThrowErrorMatchingSnapshot();
         });
     });
 
