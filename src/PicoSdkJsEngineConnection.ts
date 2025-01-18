@@ -1,7 +1,7 @@
 import { randomInt } from 'crypto';
 import { LogMessage } from './psjLogger';
 import Version from './version';
-import runtimeConfig from './runtimeConfig.json';
+import pkg from '../package.json';
 
 export class CommandRequest<T = object> {
     public cmd: string;
@@ -88,7 +88,7 @@ export abstract class PicoSdkJsEngineConnection {
     public onClose: () => void = () => {};
 
     public async open(): Promise<ConnectionInfo> {
-        const minRequiredVersion = new Version(runtimeConfig.minimumEngineVersion);
+        const minRequiredVersion = new Version(pkg.version);
 
         const connectionInfo: ConnectionInfo = {
             device: (await this.openInternal()).device,
