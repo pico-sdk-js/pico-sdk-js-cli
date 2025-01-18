@@ -1,6 +1,6 @@
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import path from 'path';
-import { CommandRequest, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
+import { CommandRequest, ConnectionInfo, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
 import { LogLevel } from './psjLogger';
 import assert from 'assert';
 
@@ -17,8 +17,8 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
         return this.process !== null;
     }
 
-    public open(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
+    protected openInternal(): Promise<Pick<ConnectionInfo, 'device'>> {
+        return new Promise<Pick<ConnectionInfo, 'device'>>((resolve, reject) => {
             if (this.process !== null) {
                 reject('Process already running');
                 return;
@@ -76,7 +76,7 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
                     childprocess.stdout.read();
                 }, 1000);
 
-                resolve();
+                resolve({ device: procPath });
             });
         });
     }

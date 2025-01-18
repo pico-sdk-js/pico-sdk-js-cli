@@ -1,7 +1,7 @@
 import { Argv, ArgumentsCamelCase, CommandModule } from 'yargs';
 import { logger, LogLevel } from '../psjLogger';
 import { PsjReplServer } from '../psjReplServer';
-import { PicoSdkJsEngineConnection } from '../PicoSdkJsEngineConnection';
+import { ConnectionInfo, PicoSdkJsEngineConnection } from '../PicoSdkJsEngineConnection';
 import { LocalProcessPicoSdkJsEngineConnection } from '../LocalProcessPicoSdkJsEngineConnection';
 import { SerialPicoSdkJsEngineConnection } from '../SerialPicoSdkJsEngineConnection';
 
@@ -20,6 +20,8 @@ const logLevels: Record<string, LogLevel> = {
 
 async function getConnection(connectionString: string): Promise<PicoSdkJsEngineConnection> {
     let connection: PicoSdkJsEngineConnection | null = null;
+    let connectionInfo: ConnectionInfo | null = null;
+
     if (connectionString === 'local') {
         const localPath = process.env.PSJ_LOCAL;
         if (!localPath) {
@@ -29,19 +31,18 @@ async function getConnection(connectionString: string): Promise<PicoSdkJsEngineC
         console.log('Connecting to local process at %s', localPath);
         connection = new LocalProcessPicoSdkJsEngineConnection(localPath);
 
-        await connection.open();
+        connectionInfo = await connection.open();
     } else if (connectionString === 'auto') {
         const devices = await SerialPicoSdkJsEngineConnection.list();
         console.log('Searching for device running Pico-SDK-JS engine...');
         for (const device of devices) {
             try {
                 connection = new SerialPicoSdkJsEngineConnection(device);
-                await connection.open();
-
-                console.log('Connected to serial device at %s', device);
+                connectionInfo = await connection.open();
                 break;
             } catch {
                 connection = null;
+                connectionInfo = null;
             }
         }
 
@@ -53,7 +54,11 @@ async function getConnection(connectionString: string): Promise<PicoSdkJsEngineC
         console.log('Connecting to serial device at %s', device);
         connection = new SerialPicoSdkJsEngineConnection(device);
 
-        await connection.open();
+        connectionInfo = await connection.open();
+    }
+
+    if (connectionInfo !== null) {
+        console.log(`Connected to Pico-SDK-JS Engine v${connectionInfo.version} at '${connectionInfo.device}'`);
     }
 
     return connection;
