@@ -66,10 +66,20 @@ export interface ConnectionInfo {
     version: Version;
 }
 
+export interface ConfigReadOptions {
+    name: string;
+}
+
+export interface ConfigWriteOptions {
+    name: string;
+    value: string | null;
+}
+
 export type LsCommandResponse = CommandResponse<{ name: string; size: number }[]>;
 export type StatsCommandResponse = CommandResponse<Record<string, object>>;
 export type WriteCommandResponse = CommandResponse<{ bytes: number }>;
 export type ReadCommandResponse = CommandResponse<{ size: number; seg: number; nSegs: number; content: string }>;
+export type ConfigReadCommandResponse = CommandResponse<string | null>;
 
 export abstract class PicoSdkJsEngineConnection {
     private etags: Record<number, CommandResponseHandler> = {};
@@ -168,6 +178,16 @@ export abstract class PicoSdkJsEngineConnection {
 
     public stats(): Promise<StatsCommandResponse> {
         const cmd = new CommandRequest('stats');
+        return this.sendCommand(cmd);
+    }
+
+    public config_read(options: ConfigReadOptions): Promise<ConfigReadCommandResponse> {
+        const cmd = new CommandRequest('config_r', options);
+        return this.sendCommand(cmd);
+    }
+
+    public config_write(options: ConfigWriteOptions): Promise<CommandResponse> {
+        const cmd = new CommandRequest('config_w', options);
         return this.sendCommand(cmd);
     }
 
