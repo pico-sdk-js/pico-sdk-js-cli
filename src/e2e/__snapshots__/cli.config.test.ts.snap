@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PSJ Runtime Scenarios .config can set an autorun file: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
+> .write test.js --content "print('success!');"
+Writing "static content" to "test.js"
+18 bytes (1 segments) written
+> .config autorun test.js
+Set config option autorun to "test.js"
+> .restart
+Device restarting
+> 
+success!
+> "
+`;
+
+exports[`PSJ Runtime Scenarios .config can unset an autorun file: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
+> .write test.js --content "print('success!');"
+Writing "static content" to "test.js"
+18 bytes (1 segments) written
+> .config autorun test.js
+Set config option autorun to "test.js"
+> .restart
+Device restarting
+> 
+success!
+> .config autorun --unset
+Unset config option autorun
+> .restart
+Device restarting
+> "
+`;
+
+exports[`PSJ Runtime Scenarios .config initially has no autorun setting: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
+> .config autorun
+null
+> "
+`;

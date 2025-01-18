@@ -1,4 +1,4 @@
-import { describe, afterEach, it } from '@jest/globals';
+import { describe, beforeEach, it } from '@jest/globals';
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -7,7 +7,7 @@ import os from 'node:os';
 import psjRunner from './psjRunner';
 
 describe('PSJ Flash Scenarios', () => {
-    afterEach(async () => {
+    beforeEach(async () => {
         // Clear flash ram to start from scratch
         // prettier-ignore
         await psjRunner()

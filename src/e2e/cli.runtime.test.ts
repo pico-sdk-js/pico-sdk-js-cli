@@ -1,4 +1,4 @@
-import { describe, afterEach, it } from '@jest/globals';
+import { describe, beforeEach, it } from '@jest/globals';
 import psjRunner from './psjRunner';
 
 describe('PSJ Runtime Scenarios', () => {
@@ -58,7 +58,7 @@ describe('PSJ Runtime Scenarios', () => {
     });
 
     describe('.kill', () => {
-        afterEach(async () => {
+        beforeEach(async () => {
             // Reset pico after each run
             // prettier-ignore
             await psjRunner()
@@ -94,7 +94,7 @@ describe('PSJ Runtime Scenarios', () => {
     });
 
     describe('.run', () => {
-        afterEach(async () => {
+        beforeEach(async () => {
             // Reset pico after each run
             // prettier-ignore
             await psjRunner()
@@ -103,7 +103,7 @@ describe('PSJ Runtime Scenarios', () => {
                 .command(`.restart`);
         });
 
-        it('is able to execute when existing already running', async () => {
+        it('is able to execute an existing file', async () => {
             const fileText = "print('success!');";
 
             // prettier-ignore

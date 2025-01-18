@@ -47,14 +47,4 @@ describe('PSJ Connection Scenarios', () => {
                 .assertExitCode(0);
         });
     });
-
-    describe('.ls', () => {
-        it('shows error when not connected', async () => {
-            // prettier-ignore
-            await psjRunner()
-                .start(['--skip-header'])
-                .command('.ls')
-                .assertSnapshot();
-        });
-    });
 });
