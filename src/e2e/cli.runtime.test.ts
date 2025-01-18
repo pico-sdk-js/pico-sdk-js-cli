@@ -103,7 +103,7 @@ describe('PSJ Runtime Scenarios', () => {
                 .command(`.restart`);
         });
 
-        it('is able to execute an existing file', async () => {
+        it('is able to execute when existing already running', async () => {
             const fileText = "print('success!');";
 
             // prettier-ignore
@@ -111,6 +111,24 @@ describe('PSJ Runtime Scenarios', () => {
                 .start(['--skip-header'])
                 .command(`.write test.js --content "${fileText}"`)
                 .command(`.run test.js`)
+                .assertSnapshot();
+        });
+
+        it('is able to kill to execute a new script', async () => {
+            const file1Text = 'let y=0; while(true) { y++; }';
+            const file2Text = "print('success!');";
+
+            // prettier-ignore
+            await psjRunner()
+                .start(['--skip-header'])
+                .command(`.write test1.js --content "${file1Text}"`)
+                .command(`.write test2.js --content "${file2Text}"`)
+                .command(`.run test1.js`)
+                .pause(100)
+                .command('y > 0')
+                .command(`.run test2.js`)
+                .pause(100)
+                .command('y > 0')
                 .assertSnapshot();
         });
 

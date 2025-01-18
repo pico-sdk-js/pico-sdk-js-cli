@@ -48,6 +48,30 @@ success!
 > "
 `;
 
+exports[`PSJ Runtime Scenarios .run is able to kill to execute a new script: stdOut 1`] = `
+"Searching for device running Pico-SDK-JS engine...
+Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
+> .write test1.js --content "let y=0; while(true) { y++; }"
+Writing "static content" to "test1.js"
+29 bytes (1 segments) written
+> .write test2.js --content "print('success!');"
+Writing "static content" to "test2.js"
+18 bytes (1 segments) written
+> .run test1.js
+Executing "test1.js"
+> y > 0
+true
+> .run test2.js
+Executing "test2.js"
+> 
+ERR: Script aborted
+> 
+success!
+> y > 0
+ERR: y is not defined
+> "
+`;
+
 exports[`PSJ Runtime Scenarios .run shows an error for a hidden file: stdOut 1`] = `
 "Searching for device running Pico-SDK-JS engine...
 Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
