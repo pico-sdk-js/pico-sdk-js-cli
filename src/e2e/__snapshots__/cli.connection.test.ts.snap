@@ -7,14 +7,6 @@ Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
 ERR: Connection to Pico-SDK-JS engine lost."
 `;
 
-exports[`PSJ Connection Scenarios .ls shows error when not connected: stdOut 1`] = `
-"Searching for device running Pico-SDK-JS engine...
-Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'
-> .ls
-total 0 file(s)
-> "
-`;
-
 exports[`PSJ Connection Scenarios command line args --connection connects to /dev/ttyACM0: stdOut 1`] = `
 "Connecting to serial device at /dev/ttyACM0
 Connected to Pico-SDK-JS Engine v0.0.3 at '/dev/ttyACM0'

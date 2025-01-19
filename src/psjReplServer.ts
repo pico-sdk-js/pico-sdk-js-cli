@@ -11,6 +11,7 @@ import { formatCommand } from './replCommands/formatCommand';
 import { restartCommand } from './replCommands/restartCommand';
 import { killCommand } from './replCommands/killCommand';
 import { runCommand } from './replCommands/runCommand';
+import { configCommand } from './replCommands/configCommand';
 
 export class PsjReplServer {
     private connection: PicoSdkJsEngineConnection | null;
@@ -113,6 +114,11 @@ export class PsjReplServer {
         this.server.defineCommand('run', {
             help: 'Executes a file stored on the device',
             action: (text: string) => this.wrapCommand(() => runCommand(this, text))
+        });
+
+        this.server.defineCommand('config', {
+            help: 'Get or set a config option to the Pico',
+            action: (text: string) => this.wrapCommand(() => configCommand(this, text))
         });
     }
 

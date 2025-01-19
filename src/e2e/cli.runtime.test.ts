@@ -1,4 +1,4 @@
-import { describe, afterEach, it, xit } from '@jest/globals';
+import { describe, beforeEach, it } from '@jest/globals';
 import psjRunner from './psjRunner';
 
 describe('PSJ Runtime Scenarios', () => {
@@ -58,7 +58,7 @@ describe('PSJ Runtime Scenarios', () => {
     });
 
     describe('.kill', () => {
-        afterEach(async () => {
+        beforeEach(async () => {
             // Reset pico after each run
             // prettier-ignore
             await psjRunner()
@@ -94,7 +94,7 @@ describe('PSJ Runtime Scenarios', () => {
     });
 
     describe('.run', () => {
-        afterEach(async () => {
+        beforeEach(async () => {
             // Reset pico after each run
             // prettier-ignore
             await psjRunner()
@@ -114,6 +114,24 @@ describe('PSJ Runtime Scenarios', () => {
                 .assertSnapshot();
         });
 
+        it('is able to kill to execute a new script', async () => {
+            const file1Text = 'let y=0; while(true) { y++; }';
+            const file2Text = "print('success!');";
+
+            // prettier-ignore
+            await psjRunner()
+                .start(['--skip-header'])
+                .command(`.write test1.js --content "${file1Text}"`)
+                .command(`.write test2.js --content "${file2Text}"`)
+                .command(`.run test1.js`)
+                .pause(100)
+                .command('y > 0')
+                .command(`.run test2.js`)
+                .pause(100)
+                .command('y > 0')
+                .assertSnapshot();
+        });
+
         it('shows an error for a non-existing file', async () => {
             // prettier-ignore
             await psjRunner()
@@ -122,16 +140,11 @@ describe('PSJ Runtime Scenarios', () => {
                 .assertSnapshot();
         });
 
-        xit.failing('shows an error for a hidden file', async () => {
-            // https://github.com/pico-sdk-js/pico-sdk-js-cli/issues/10
-
-            const fileText = "print('success!');";
-
+        it('shows an error for a hidden file', async () => {
             // prettier-ignore
             await psjRunner()
                 .start(['--skip-header'])
-                .command(`.write .hidden.js --content "${fileText}"`)
-                .command(`.run hidden.js`)
+                .command(`.run .hidden.js`)
                 .assertSnapshot();
         });
     });
