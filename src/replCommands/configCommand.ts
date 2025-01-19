@@ -19,7 +19,7 @@ export async function configCommand(replServer: PsjReplServer, text: string): Pr
         .positional('config-value', {
             alias: 'v',
             type: 'string',
-            description: 'The name of the config setting to get or set.',
+            description: 'The value of the config setting to set.',
             normalize: true,
             demandOption: false
         })

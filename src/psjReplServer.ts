@@ -117,7 +117,7 @@ export class PsjReplServer {
         });
 
         this.server.defineCommand('config', {
-            help: 'Get or set a config option to the Pico',
+            help: 'Get or set a config option to the device',
             action: (text: string) => this.wrapCommand(() => configCommand(this, text))
         });
     }
