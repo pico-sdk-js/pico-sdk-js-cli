@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Removing .connect and .disconnect commands and requiring connection on startup",
-  "packageName": "@pico-sdk-js/cli",
-  "email": "jt000@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Adding compatibility checking between the CLI and Engine when connecting",
-  "packageName": "@pico-sdk-js/cli",
-  "email": "jt000@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

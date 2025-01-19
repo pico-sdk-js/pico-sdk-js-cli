@@ -1,8 +1,23 @@
 # Change Log - @pico-sdk-js/cli
 
-<!-- This log was last generated on Sun, 05 Jan 2025 19:12:57 GMT and should not be manually modified. -->
+<!-- This log was last generated on Sun, 19 Jan 2025 15:05:23 GMT and should not be manually modified. -->
 
 <!-- Start content -->
+
+## 0.1.0
+
+Sun, 19 Jan 2025 15:05:23 GMT
+
+### Minor changes
+
+- Adding .config command (jt000@users.noreply.github.com)
+
+### Patches
+
+- Adds REPL --help for commands with no arguements (jt000@users.noreply.github.com)
+- Removing --version from repl commands (jt000@users.noreply.github.com)
+- Removing .connect and .disconnect commands and requiring connection on startup (jt000@users.noreply.github.com)
+- Adding compatibility checking between the CLI and Engine when connecting (jt000@users.noreply.github.com)
 
 ## 0.0.4
 

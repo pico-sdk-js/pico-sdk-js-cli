@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Adding .config command",
-  "packageName": "@pico-sdk-js/cli",
-  "email": "jt000@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
