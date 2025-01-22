@@ -3,12 +3,11 @@ import pkg from '../../package.json';
 import { ArgumentsCamelCase, Argv } from 'yargs';
 import { availableLocales, processI18NMiddleware, t } from '../locales';
 
-export interface IDebugCommandOptions {
-    debug: boolean;
+export interface ILangCommandOptions {
     lang: string;
 }
 
-export interface ICoreCommandOptions extends IDebugCommandOptions {
+export interface ICoreCommandOptions extends ILangCommandOptions {
     'skip-header': boolean;
 }
 
@@ -33,11 +32,6 @@ async function abortListenerMiddleware() {
 
 export function yargsSetup(yargs: Argv, defaultLocale: string) {
     const langYargs = yargs
-        .option('debug', {
-            type: 'boolean',
-            hidden: true,
-            default: false
-        })
         .option('lang', {
             type: 'string',
             hidden: true,

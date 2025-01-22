@@ -1,7 +1,7 @@
 import i18n from 'i18n';
 import path from 'path';
 import { ArgumentsCamelCase } from 'yargs';
-import { IDebugCommandOptions } from './yargsCommands/coreCommand';
+import { ILangCommandOptions } from './yargsCommands/coreCommand';
 import { logger, LogLevel } from './psjLogger';
 
 export const availableLocales = ['en', 'es'];
@@ -26,15 +26,12 @@ export async function getOsLocale(): Promise<string> {
     return 'en';
 }
 
-export function processI18NMiddleware(args: ArgumentsCamelCase<IDebugCommandOptions>) {
+export function processI18NMiddleware(args: ArgumentsCamelCase<ILangCommandOptions>) {
     const options: i18n.ConfigurationOptions = {
         locales: availableLocales,
         directory: path.join(__dirname, './locales'),
         retryInDefaultLocale: true,
-        defaultLocale: args.lang,
-        logDebugFn(msg) {
-            logger.logMsg(LogLevel.Debug, `(i18n) ${msg}`);
-        },
+        defaultLocale: 'en',
         logWarnFn(msg) {
             logger.logMsg(LogLevel.Warning, `(i18n) ${msg}`);
         },
@@ -43,13 +40,8 @@ export function processI18NMiddleware(args: ArgumentsCamelCase<IDebugCommandOpti
         }
     };
 
-    if (args.debug) {
-        options.directory = path.join(__dirname, '../src/locales');
-        options.updateFiles = true;
-        options.syncFiles = true;
-    }
-
     i18n.configure(options);
+    i18n.setLocale(args.lang);
 }
 
 export function t(phraseOrOptions: string, ...replace: string[]): string {
