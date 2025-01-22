@@ -1,17 +1,18 @@
 import Yargs from 'yargs/yargs';
 import { PsjReplServer } from '../psjReplServer';
+import { t } from '../locales';
 
 export async function restartCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('*', 'restart the Pico Device and loaded program')
+        .command('*', t('restart the Pico Device and loaded program'))
         .usage('.restart')
-        .example('.restart --hard', 'Perform a hard restart on the connected device.')
+        .example('.restart --hard', t('Perform a hard restart on the connected device.'))
         .options({
             hard: {
                 alias: 'h',
                 type: 'boolean',
-                description: 'do a hard restart forcing the entire pico device to reboot.',
+                description: t('do a hard restart forcing the entire pico device to reboot.'),
                 default: false
             }
         })
@@ -32,12 +33,12 @@ export async function restartCommand(replServer: PsjReplServer, text: string): P
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
+        throw new Error(t('Not connected, run .connect to connect to a device running Pico-Sdk-JS.'));
     }
 
     await connection.restart(args.hard);
 
-    console.log('Device restarting');
+    console.log(t('Device restarting'));
 
     if (args.hard) {
         // Connection broken when hard restart performed. Need to close the connection.

@@ -2,6 +2,7 @@ import { randomInt } from 'crypto';
 import { LogMessage } from './psjLogger';
 import Version from './version';
 import pkg from '../package.json';
+import { t } from './locales';
 
 export class CommandRequest<T = object> {
     public cmd: string;
@@ -116,12 +117,12 @@ export abstract class PicoSdkJsEngineConnection {
             }
         } catch (error) {
             this.close();
-            throw 'Pico-SDK-JS not running on device';
+            throw t('Pico-SDK-JS not running on device');
         }
 
         if (!minRequiredVersion.isCompatible(connectionInfo.version)) {
             this.close();
-            throw `Pico-SDK-JS Engine v${connectionInfo.version} is not compatible with this version of the CLI which requires v${minRequiredVersion}.`;
+            throw t('Pico-SDK-JS Engine v%s is not compatible with this version of the CLI which requires v%s.', connectionInfo.version.toString(), minRequiredVersion.toString());
         }
 
         this.isConnected = true;
@@ -194,7 +195,7 @@ export abstract class PicoSdkJsEngineConnection {
     protected sendCommand<T = CommandResponse>(cmd: CommandRequest, timeout = 2000): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             if (!this.isOpen()) {
-                reject('Connection not open');
+                reject(t('Connection not open'));
                 return;
             }
 
@@ -213,7 +214,7 @@ export abstract class PicoSdkJsEngineConnection {
                          * and already confirmed to exist.
                          **/
                         delete this.etags[cmd.etag];
-                        handler.reject(`TIMEOUT ERROR: Command response took over ${timeout}ms`);
+                        handler.reject(t('TIMEOUT ERROR: Command response took over %sms', timeout.toString()));
                     }
                 }, timeout)
             };
@@ -233,7 +234,7 @@ export abstract class PicoSdkJsEngineConnection {
                  **/
                 delete this.etags[etag];
                 clearTimeout(handler.timeoutId);
-                handler.reject(`REMOTE ERROR: ${errorMsg}`);
+                handler.reject(t('REMOTE ERROR: %s', errorMsg));
             }
         }
     }
@@ -266,7 +267,7 @@ export abstract class PicoSdkJsEngineConnection {
                     handler.resolve(cmdResponse);
                 }
             } else {
-                console.error('UNKNOWN ETAG: #%d', cmdResponse.etag);
+                console.error(t('UNKNOWN ETAG: #%s', cmdResponse.etag.toString()));
             }
         } else {
             if (cmdResponse.cmd === 'log') {

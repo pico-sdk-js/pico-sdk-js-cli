@@ -1,13 +1,14 @@
 import chalk from 'chalk';
 import { PsjReplServer } from '../psjReplServer';
 import Yargs from 'yargs/yargs';
+import { t } from '../locales';
 
 export async function statsCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('*', 'Get information on the connected device')
+        .command('*', t('Get information on the connected device'))
         .usage('.stats')
-        .example('.stats', 'get information on the connected device.')
+        .example('.stats', t('get information on the connected device.'))
         .fail((msg: string) => {
             failed = true;
             console.error(msg);
@@ -25,7 +26,7 @@ export async function statsCommand(replServer: PsjReplServer, text: string): Pro
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
+        throw new Error(t('Not connected, run .connect to connect to a device running Pico-Sdk-JS.'));
     }
 
     const { value } = await connection.stats();

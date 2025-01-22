@@ -1,17 +1,18 @@
 import Yargs from 'yargs/yargs';
 import { PsjReplServer } from '../psjReplServer';
 import { RunCommandOptions } from '../PicoSdkJsEngineConnection';
+import { t } from '../locales';
 
 export async function runCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('* <remote-path>', 'Execute a file from the connected device')
+        .command('* <remote-path>', t('Execute a file from the connected device'))
         .usage('.run <remote-path>')
-        .example('.run file.js', 'Execute a file stored on the Pico with the file name "file.js".')
+        .example('.run file.js', t('Execute a file stored on the Pico with the file name "file.js".'))
         .positional('remote-path', {
             alias: 'r',
             type: 'string',
-            description: 'The name to load from the Pico device',
+            description: t('The name to load from the Pico device'),
             normalize: true,
             demandOption: true
         })
@@ -32,11 +33,11 @@ export async function runCommand(replServer: PsjReplServer, text: string): Promi
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
+        throw new Error(t('Not connected, run .connect to connect to a device running Pico-Sdk-JS.'));
     }
 
     const srcName = args.remotePath;
-    console.log('Executing "%s"', srcName);
+    console.log(t('Executing "%s"', srcName));
 
     const options: RunCommandOptions = {
         path: srcName

@@ -4,6 +4,7 @@ import { PsjReplServer } from '../psjReplServer';
 import { ConnectionInfo, PicoSdkJsEngineConnection } from '../PicoSdkJsEngineConnection';
 import { LocalProcessPicoSdkJsEngineConnection } from '../LocalProcessPicoSdkJsEngineConnection';
 import { SerialPicoSdkJsEngineConnection } from '../SerialPicoSdkJsEngineConnection';
+import { t } from '../locales';
 
 interface IReplCommandOptions {
     connection: string;
@@ -25,16 +26,16 @@ async function getConnection(connectionString: string): Promise<PicoSdkJsEngineC
     if (connectionString === 'local') {
         const localPath = process.env.PSJ_LOCAL;
         if (!localPath) {
-            throw new Error("Local path not defined. Must set environment variable 'PSJ_LOCAL' to the path of the pico-sdk-js executable.");
+            throw new Error(t('Local path not defined. Must set environment variable "PSJ_LOCAL" to the path of the pico-sdk-js executable.'));
         }
 
-        console.log('Connecting to local process at %s', localPath);
+        console.log(t('Connecting to local process at %s', localPath));
         connection = new LocalProcessPicoSdkJsEngineConnection(localPath);
 
         connectionInfo = await connection.open();
     } else if (connectionString === 'auto') {
         const devices = await SerialPicoSdkJsEngineConnection.list();
-        console.log('Searching for device running Pico-SDK-JS engine...');
+        console.log(t('Searching for device running Pico-SDK-JS engine...'));
         for (const device of devices) {
             try {
                 connection = new SerialPicoSdkJsEngineConnection(device);
@@ -47,28 +48,28 @@ async function getConnection(connectionString: string): Promise<PicoSdkJsEngineC
         }
 
         if (connection === null) {
-            throw new Error(`Valid connection to Pico-SDK-JS not found.`);
+            throw new Error(t('Valid connection to Pico-SDK-JS not found.'));
         }
     } else {
         const device = connectionString;
-        console.log('Connecting to serial device at %s', device);
+        console.log(t('Connecting to serial device at %s', device));
         connection = new SerialPicoSdkJsEngineConnection(device);
 
         connectionInfo = await connection.open();
     }
 
     if (connectionInfo !== null) {
-        console.log(`Connected to Pico-SDK-JS Engine v${connectionInfo.version} at '${connectionInfo.device}'`);
+        console.log(t('Connected to Pico-SDK-JS Engine v%s at "%s"', connectionInfo.version.toString(), connectionInfo.device));
     }
 
     return connection;
 }
 
-class ReplCommand implements CommandModule<IReplCommandOptions, IReplCommandOptions> {
+export class ReplCommand implements CommandModule<IReplCommandOptions, IReplCommandOptions> {
     public readonly aliases = [];
     public readonly command = ['repl', '$0'];
     public readonly deprecated = false;
-    public readonly describe = 'Starts the REPL server to connect to the Raspberry Pi Pico';
+    public readonly describe = t('Starts the REPL server to connect to the Raspberry Pi Pico');
 
     public builder(yargs: Argv): Argv<IReplCommandOptions> {
         return yargs
@@ -76,13 +77,13 @@ class ReplCommand implements CommandModule<IReplCommandOptions, IReplCommandOpti
                 alias: 'll',
                 type: 'string',
                 choices: ['error', 'warning', 'debug', 'trace'],
-                description: 'Sets the log level of the output.',
+                description: t('Sets the log level of the output.'),
                 default: 'error'
             })
             .option('connection', {
                 alias: 'c',
                 type: 'string',
-                description: 'Specifies the target device to connect to: "local" for a local process, "auto" for the first available device, or a specific serial port path (e.g., /dev/tty.XXX or COM1).',
+                description: t('Specifies the target device to connect to: "local" for a local process, "auto" for the first available device, or a specific serial port path (e.g., /dev/tty.XXX or COM1).'),
                 default: 'auto'
             });
     }
@@ -100,6 +101,3 @@ class ReplCommand implements CommandModule<IReplCommandOptions, IReplCommandOpti
         }
     }
 }
-
-const replCommand = new ReplCommand();
-export default replCommand;

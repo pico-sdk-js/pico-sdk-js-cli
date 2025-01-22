@@ -12,6 +12,7 @@ import { restartCommand } from './replCommands/restartCommand';
 import { killCommand } from './replCommands/killCommand';
 import { runCommand } from './replCommands/runCommand';
 import { configCommand } from './replCommands/configCommand';
+import { t } from './locales';
 
 export class PsjReplServer {
     private connection: PicoSdkJsEngineConnection | null;
@@ -25,7 +26,7 @@ export class PsjReplServer {
             this.logFn(m);
         };
         this.connection.onClose = () => {
-            logger.logMsg(LogLevel.Error, 'Connection to Pico-SDK-JS engine lost.');
+            logger.logMsg(LogLevel.Error, t('Connection to Pico-SDK-JS engine lost.'));
             this.connection = null;
             this.close();
         };
@@ -72,52 +73,52 @@ export class PsjReplServer {
         delete commands.clear;
 
         this.server.defineCommand('stats', {
-            help: 'Get information on the connected device',
+            help: t('Get information on the connected device'),
             action: (text: string) => this.wrapCommand(() => statsCommand(this, text))
         });
 
         this.server.defineCommand('ls', {
-            help: 'List files stored on the connected device',
+            help: t('List files stored on the connected device'),
             action: (text: string) => this.wrapCommand(() => lsCommand(this, text))
         });
 
         this.server.defineCommand('write', {
-            help: 'Write a local file to the connected device',
+            help: t('Write a local file to the connected device'),
             action: (text: string) => this.wrapCommand(() => writeCommand(this, text))
         });
 
         this.server.defineCommand('read', {
-            help: 'Read a file on the connected device',
+            help: t('Read a file on the connected device'),
             action: (text: string) => this.wrapCommand(() => readCommand(this, text))
         });
 
         this.server.defineCommand('delete', {
-            help: 'Delete a file on the connected device',
+            help: t('Delete a file on the connected device'),
             action: (text: string) => this.wrapCommand(() => deleteCommand(this, text))
         });
 
         this.server.defineCommand('format', {
-            help: 'Delete all files and reformat the connected device',
+            help: t('Delete all files and reformat the connected device'),
             action: (text: string) => this.wrapCommand(() => formatCommand(this, text))
         });
 
         this.server.defineCommand('restart', {
-            help: 'Clear the device context and restart the entry script',
+            help: t('Clear the device context and restart the entry script'),
             action: (text: string) => this.wrapCommand(() => restartCommand(this, text))
         });
 
         this.server.defineCommand('kill', {
-            help: 'Stops the script running on the device',
+            help: t('Stops the script running on the device'),
             action: (text: string) => this.wrapCommand(() => killCommand(this, text))
         });
 
         this.server.defineCommand('run', {
-            help: 'Executes a file stored on the device',
+            help: t('Executes a file stored on the device'),
             action: (text: string) => this.wrapCommand(() => runCommand(this, text))
         });
 
         this.server.defineCommand('config', {
-            help: 'Get or set a config option to the device',
+            help: t('Get or set a config option to the device'),
             action: (text: string) => this.wrapCommand(() => configCommand(this, text))
         });
     }
@@ -179,7 +180,7 @@ export class PsjReplServer {
 
     public async exec(cmd: string): Promise<unknown> {
         if (!this.connection) {
-            this.logFn({ level: LogLevel.Error, msg: 'Not connected' });
+            this.logFn({ level: LogLevel.Error, msg: t('Not connected') });
             return undefined;
         }
 

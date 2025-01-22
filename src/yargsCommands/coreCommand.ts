@@ -32,9 +32,7 @@ async function abortListenerMiddleware() {
 }
 
 export function yargsSetup(yargs: Argv, defaultLocale: string) {
-    return yargs
-        .strict()
-        .scriptName('psj')
+    const langYargs = yargs
         .option('debug', {
             type: 'boolean',
             hidden: true,
@@ -46,7 +44,13 @@ export function yargsSetup(yargs: Argv, defaultLocale: string) {
             default: defaultLocale,
             choices: availableLocales
         })
-        .middleware(processI18NMiddleware, true)
+        .middleware(processI18NMiddleware, true);
+
+    langYargs.parse();
+
+    return langYargs
+        .strict()
+        .scriptName('psj')
         .option('skip-header', {
             type: 'boolean',
             description: t('Do not output the process header.'),

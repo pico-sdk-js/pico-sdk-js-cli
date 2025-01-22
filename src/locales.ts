@@ -2,6 +2,7 @@ import i18n from 'i18n';
 import path from 'path';
 import { ArgumentsCamelCase } from 'yargs';
 import { IDebugCommandOptions } from './yargsCommands/coreCommand';
+import { logger, LogLevel } from './psjLogger';
 
 export const availableLocales = ['en', 'es'];
 
@@ -30,7 +31,16 @@ export function processI18NMiddleware(args: ArgumentsCamelCase<IDebugCommandOpti
         locales: availableLocales,
         directory: path.join(__dirname, './locales'),
         retryInDefaultLocale: true,
-        defaultLocale: args.lang
+        defaultLocale: args.lang,
+        logDebugFn(msg) {
+            logger.logMsg(LogLevel.Debug, `(i18n) ${msg}`);
+        },
+        logWarnFn(msg) {
+            logger.logMsg(LogLevel.Warning, `(i18n) ${msg}`);
+        },
+        logErrorFn(msg) {
+            logger.logMsg(LogLevel.Error, `(i18n) ${msg}`);
+        }
     };
 
     if (args.debug) {
