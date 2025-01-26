@@ -67,7 +67,7 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
 
                     this.onLog({
                         level: code === 0 ? LogLevel.Trace : LogLevel.Error,
-                        msg: t('Process exited with code %s', code?.toString() ?? '<null>')
+                        msg: t('Process exited with code %d', code ?? '<null>')
                     });
 
                     this.process = null;

@@ -59,7 +59,7 @@ async function getConnection(connectionString: string): Promise<PicoSdkJsEngineC
     }
 
     if (connectionInfo !== null) {
-        console.log(t('Connected to Pico-SDK-JS Engine v%s at "%s"', connectionInfo.version.toString(), connectionInfo.device));
+        console.log(t('Connected to Pico-SDK-JS Engine v%s at "%s"', connectionInfo.version, connectionInfo.device));
     }
 
     return connection;

@@ -30,7 +30,7 @@ export async function lsCommand(replServer: PsjReplServer, text: string): Promis
 
     const response = await connection.ls();
 
-    console.log(t('total %d file(s)', response.value.length.toString()));
+    console.log(t('total %d file(s)', response.value.length));
     if (response.value.length > 0) {
         console.table(response.value);
     }

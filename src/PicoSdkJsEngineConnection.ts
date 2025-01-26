@@ -122,7 +122,7 @@ export abstract class PicoSdkJsEngineConnection {
 
         if (!minRequiredVersion.isCompatible(connectionInfo.version)) {
             this.close();
-            throw t('Pico-SDK-JS Engine v%s is not compatible with this version of the CLI which requires v%s.', connectionInfo.version.toString(), minRequiredVersion.toString());
+            throw t('Pico-SDK-JS Engine v%s is not compatible with this version of the CLI which requires v%s.', connectionInfo.version, minRequiredVersion);
         }
 
         this.isConnected = true;
@@ -214,7 +214,7 @@ export abstract class PicoSdkJsEngineConnection {
                          * and already confirmed to exist.
                          **/
                         delete this.etags[cmd.etag];
-                        handler.reject(t('TIMEOUT ERROR: Command response took over %sms', timeout.toString()));
+                        handler.reject(t('TIMEOUT ERROR: Command response took over %dms', timeout));
                     }
                 }, timeout)
             };
@@ -267,7 +267,7 @@ export abstract class PicoSdkJsEngineConnection {
                     handler.resolve(cmdResponse);
                 }
             } else {
-                console.error(t('UNKNOWN ETAG: #%s', cmdResponse.etag.toString()));
+                console.error(t('UNKNOWN ETAG: #%d', cmdResponse.etag));
             }
         } else {
             if (cmdResponse.cmd === 'log') {

@@ -87,5 +87,5 @@ export async function readCommand(replServer: PsjReplServer, text: string): Prom
         console.log(contents);
     }
 
-    console.log(t('%d bytes (%d segments) read', bytesRead.toString(), currentSegment.toString()));
+    console.log(t('%d bytes (%d segments) read', bytesRead, currentSegment));
 }

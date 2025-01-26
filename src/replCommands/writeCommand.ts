@@ -165,7 +165,7 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
             bytes = await reader.readNext(pageSize);
         }
 
-        console.log(t('%d bytes (%d segments) written', bytesWritten.toString(), pageCount.toString()));
+        console.log(t('%d bytes (%d segments) written', bytesWritten, pageCount));
     } finally {
         reader.close();
     }
