@@ -31,7 +31,7 @@
     "dist"
   ],
   "scripts": {
-    "prebuild:only": "node ./scripts/copy-locales.js",
+    "prebuild:only": "node ./scripts/copy-locales.mjs",
     "build:only": "tsc --project tsconfig.json",
     "eslint": "npx eslint ./src",
     "format": "prettier --write \"./src/**/*.{ts,js,json}\"",
