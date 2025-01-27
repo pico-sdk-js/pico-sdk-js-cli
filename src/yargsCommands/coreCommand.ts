@@ -47,11 +47,11 @@ export function yargsSetup(yargs: Argv, defaultLocale: string) {
         .scriptName('psj')
         .option('skip-header', {
             type: 'boolean',
-            description: t('Do not output the process header.'),
+            description: t('args-skip-header'),
             default: false
         })
         .middleware(processHeaderMiddleware, true)
         .middleware(abortListenerMiddleware, true)
         .demandCommand()
-        .epilogue(t('For more information, check out our docs on https://pico-sdk-js.github.io/'));
+        .epilogue(t('args-epilogue'));
 }

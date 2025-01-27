@@ -5,9 +5,9 @@ import { t } from '../locales';
 export async function lsCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('*', t('List files stored on the connected device'))
+        .command('*', t('help-ls'))
         .usage('.ls')
-        .example('.ls', t('list files stored on the connected device.'))
+        .example('.ls', t('help-ls-example1'))
         .fail((msg: string) => {
             failed = true;
             console.error(msg);
@@ -25,12 +25,12 @@ export async function lsCommand(replServer: PsjReplServer, text: string): Promis
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error(t('Not connected, run .connect to connect to a device running Pico-Sdk-JS.'));
+        throw new Error(t('err-connection-not-open'));
     }
 
     const response = await connection.ls();
 
-    console.log(t('total %d file(s)', response.value.length));
+    console.log(t('msg-files-listed', response.value.length));
     if (response.value.length > 0) {
         console.table(response.value);
     }

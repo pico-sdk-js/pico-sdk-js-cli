@@ -92,14 +92,14 @@ class StringReader implements IReader {
 export async function writeCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('* <remote-path>', t('Write a file to the connected device'))
+        .command('* <remote-path>', t('help-write'))
         .usage('.write <remote-path>')
-        .example('.write file.js --local-path ./myFile.js', t('write the local "myFile.js" to the Pico with the file name "file.js".'))
-        .example('.write /tmp/file.js', t('write the local "/tmp/file.js" to the Pico with the file name "file.js".'))
+        .example('.write file.js --local-path ./myFile.js', t('help-write-example1'))
+        .example('.write /tmp/file.js', t('help-write-example2'))
         .positional('remote-path', {
             alias: 'r',
             type: 'string',
-            description: t('The name to save as on the Pico device'),
+            description: t('help-write-remote-path'),
             normalize: true,
             demandOption: true
         })
@@ -107,13 +107,13 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
             'local-path': {
                 alias: 'p',
                 type: 'string',
-                description: t('The local file to write to the Pico device'),
+                description: t('help-write-local-path'),
                 normalize: true
             },
             content: {
                 alias: 'c',
                 type: 'string',
-                description: t('The contents of a file to write to the Pico device'),
+                description: t('help-write-content'),
                 conflicts: ['local-path']
             }
         })
@@ -134,7 +134,7 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error(t('Not connected, run .connect to connect to a device running Pico-Sdk-JS.'));
+        throw new Error(t('err-connection-not-open'));
     }
 
     // if no localPath nor content is explicitly given, then remotePath is both the local path and remote file name
@@ -147,7 +147,7 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
 
         let bytes = await reader.readNext(pageSize);
 
-        console.log(t('Writing "%s" to "%s"', reader.srcName(), destName));
+        console.log(t('msg-writing-file', reader.srcName(), destName));
 
         while (bytes.bytesRead > 0) {
             const options: WriteCommandOptions = {
@@ -165,7 +165,7 @@ export async function writeCommand(replServer: PsjReplServer, text: string): Pro
             bytes = await reader.readNext(pageSize);
         }
 
-        console.log(t('%d bytes (%d segments) written', bytesWritten, pageCount));
+        console.log(t('msg-file-written', bytesWritten, pageCount));
     } finally {
         reader.close();
     }

@@ -6,9 +6,9 @@ import { t } from '../locales';
 export async function statsCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('*', t('Get information on the connected device'))
+        .command('*', t('help-stats'))
         .usage('.stats')
-        .example('.stats', t('get information on the connected device.'))
+        .example('.stats', t('help-stats-example1'))
         .fail((msg: string) => {
             failed = true;
             console.error(msg);
@@ -26,7 +26,7 @@ export async function statsCommand(replServer: PsjReplServer, text: string): Pro
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error(t('Not connected, run .connect to connect to a device running Pico-Sdk-JS.'));
+        throw new Error(t('err-connection-not-open'));
     }
 
     const { value } = await connection.stats();

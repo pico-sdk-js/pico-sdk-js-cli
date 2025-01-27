@@ -28,7 +28,7 @@ export function getI18n(): I18n {
                 logger.logMsg(LogLevel.Error, `(i18n) ${msg}`);
             }
         };
-    
+
         __i18n = new I18n();
         __i18n.configure(options);
         __i18n.setLocale('en');
@@ -67,7 +67,7 @@ export function t(phraseOrOptions: string, ...replace: any[]): string {
         if (v instanceof Object) {
             return v.toString();
         }
-        
+
         return v;
     });
 

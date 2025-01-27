@@ -117,12 +117,12 @@ export abstract class PicoSdkJsEngineConnection {
             }
         } catch (error) {
             this.close();
-            throw t('Pico-SDK-JS not running on device');
+            throw t('err-engine-not-running');
         }
 
         if (!minRequiredVersion.isCompatible(connectionInfo.version)) {
             this.close();
-            throw t('Pico-SDK-JS Engine v%s is not compatible with this version of the CLI which requires v%s.', connectionInfo.version, minRequiredVersion);
+            throw t('err-engine-version-not-compat', connectionInfo.version, minRequiredVersion);
         }
 
         this.isConnected = true;
@@ -195,7 +195,7 @@ export abstract class PicoSdkJsEngineConnection {
     protected sendCommand<T = CommandResponse>(cmd: CommandRequest, timeout = 2000): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             if (!this.isOpen()) {
-                reject(t('Connection not open'));
+                reject(t('err-connection-not-open'));
                 return;
             }
 
@@ -214,7 +214,7 @@ export abstract class PicoSdkJsEngineConnection {
                          * and already confirmed to exist.
                          **/
                         delete this.etags[cmd.etag];
-                        handler.reject(t('TIMEOUT ERROR: Command response took over %dms', timeout));
+                        handler.reject(t('err-command-timeout', timeout));
                     }
                 }, timeout)
             };
@@ -234,7 +234,7 @@ export abstract class PicoSdkJsEngineConnection {
                  **/
                 delete this.etags[etag];
                 clearTimeout(handler.timeoutId);
-                handler.reject(t('REMOTE ERROR: %s', errorMsg));
+                handler.reject(t('err-remote-engine-error', errorMsg));
             }
         }
     }
@@ -267,7 +267,7 @@ export abstract class PicoSdkJsEngineConnection {
                     handler.resolve(cmdResponse);
                 }
             } else {
-                console.error(t('UNKNOWN ETAG: #%d', cmdResponse.etag));
+                console.error(t('err-unknown-etag', cmdResponse.etag));
             }
         } else {
             if (cmdResponse.cmd === 'log') {

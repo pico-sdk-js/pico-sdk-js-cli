@@ -5,14 +5,14 @@ import { t } from '../locales';
 export async function restartCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('*', t('restart the Pico Device and loaded program'))
+        .command('*', t('help-restart'))
         .usage('.restart')
-        .example('.restart --hard', t('Perform a hard restart on the connected device.'))
+        .example('.restart --hard', t('help-restart-example1'))
         .options({
             hard: {
                 alias: 'h',
                 type: 'boolean',
-                description: t('do a hard restart forcing the entire pico device to reboot.'),
+                description: t('help-restart-hard'),
                 default: false
             }
         })
@@ -33,12 +33,12 @@ export async function restartCommand(replServer: PsjReplServer, text: string): P
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error(t('Not connected, run .connect to connect to a device running Pico-Sdk-JS.'));
+        throw new Error(t('err-connection-not-open'));
     }
 
     await connection.restart(args.hard);
 
-    console.log(t('Device restarting'));
+    console.log(t('msg-device-restarted'));
 
     if (args.hard) {
         // Connection broken when hard restart performed. Need to close the connection.

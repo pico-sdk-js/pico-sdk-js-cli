@@ -10,7 +10,7 @@ export default class Version {
     constructor(v: string) {
         const result = semVerRegex.exec(v);
         if (!result) {
-            throw new Error(t('string is not valid semantic version: %s', v));
+            throw new Error(t('err-verson-parse-error', v));
         }
 
         this.major = parseInt(result[1]);

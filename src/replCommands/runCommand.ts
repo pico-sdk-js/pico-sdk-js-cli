@@ -6,13 +6,13 @@ import { t } from '../locales';
 export async function runCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('* <remote-path>', t('Execute a file from the connected device'))
+        .command('* <remote-path>', t('help-run'))
         .usage('.run <remote-path>')
-        .example('.run file.js', t('Execute a file stored on the Pico with the file name "file.js".'))
+        .example('.run file.js', t('help-run-example1'))
         .positional('remote-path', {
             alias: 'r',
             type: 'string',
-            description: t('The name to load from the Pico device'),
+            description: t('help-run-remote-path'),
             normalize: true,
             demandOption: true
         })
@@ -33,11 +33,11 @@ export async function runCommand(replServer: PsjReplServer, text: string): Promi
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error(t('Not connected, run .connect to connect to a device running Pico-Sdk-JS.'));
+        throw new Error(t('err-connection-not-open'));
     }
 
     const srcName = args.remotePath;
-    console.log(t('Executing "%s"', srcName));
+    console.log(t('msg-script-executing', srcName));
 
     const options: RunCommandOptions = {
         path: srcName

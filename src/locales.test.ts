@@ -64,11 +64,11 @@ describe('locales', () => {
                 logWarnFn: jest.fn(),
                 logErrorFn: jest.fn(),
                 staticCatalog: {
-                    'en': {
-                        'string1': 'This is my string'
+                    en: {
+                        string1: 'This is my string'
                     },
-                    'es': {
-                        'string1': 'Este es mi string'
+                    es: {
+                        string1: 'Este es mi string'
                     }
                 }
             });
@@ -89,11 +89,11 @@ describe('locales', () => {
                 logWarnFn: jest.fn(),
                 logErrorFn: jest.fn(),
                 staticCatalog: {
-                    'en': {
-                        'string1': 'This is my string'
+                    en: {
+                        string1: 'This is my string'
                     },
-                    'es': {
-                        'string1': 'Este es mi string'
+                    es: {
+                        string1: 'Este es mi string'
                     }
                 }
             });
@@ -114,8 +114,8 @@ describe('locales', () => {
                 logWarnFn: jest.fn(),
                 logErrorFn: jest.fn(),
                 staticCatalog: {
-                    'en': {
-                        'string1': 'This is "%s"'
+                    en: {
+                        string1: 'This is "%s"'
                     }
                 }
             });
@@ -136,8 +136,8 @@ describe('locales', () => {
                 logWarnFn: jest.fn(),
                 logErrorFn: jest.fn(),
                 staticCatalog: {
-                    'en': {
-                        'string1': 'This is "%d"'
+                    en: {
+                        string1: 'This is "%d"'
                     }
                 }
             });
@@ -158,8 +158,8 @@ describe('locales', () => {
                 logWarnFn: jest.fn(),
                 logErrorFn: jest.fn(),
                 staticCatalog: {
-                    'en': {
-                        'string1': 'This is "%s"'
+                    en: {
+                        string1: 'This is "%s"'
                     }
                 }
             });
@@ -170,5 +170,5 @@ describe('locales', () => {
             const result = locales.t('string1', new Version('1.2.3'));
             expect(result).toBe('This is "1.2.3"');
         });
-    })
+    });
 });

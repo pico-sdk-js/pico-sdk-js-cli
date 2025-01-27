@@ -5,22 +5,22 @@ import { t } from '../locales';
 export async function configCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('* <config-name> [<config-value]', t('Get or set a config option to the Pico'))
+        .command('* <config-name> [<config-value]', t('help-config'))
         .usage('.config <config-name> [<config-value>]')
-        .example('.config autorun', t('reads the "autorun" config setting from the device.'))
-        .example('.config autorun index.js', t('sets the "autorun" config setting to "index.js".'))
-        .example('.config autorun --unset', t('unsets the "autorun" config setting the default value.'))
+        .example('.config autorun', t('help-config-example1'))
+        .example('.config autorun index.js', t('help-config-example2'))
+        .example('.config autorun --unset', t('help-config-example3'))
         .positional('config-name', {
             alias: 'n',
             type: 'string',
-            description: t('The name of the config setting to get or set.'),
+            description: t('help-config-config-name'),
             normalize: true,
             demandOption: true
         })
         .positional('config-value', {
             alias: 'v',
             type: 'string',
-            description: t('The value of the config setting to set.'),
+            description: t('help-config-config-value'),
             normalize: true,
             demandOption: false
         })
@@ -28,7 +28,7 @@ export async function configCommand(replServer: PsjReplServer, text: string): Pr
             unset: {
                 alias: 'u',
                 type: 'boolean',
-                description: t('Removes a config setting resetting the value back to the default.'),
+                description: t('help-config-unset'),
                 conflicts: ['config-value']
             }
         })
@@ -49,15 +49,15 @@ export async function configCommand(replServer: PsjReplServer, text: string): Pr
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error(t('Not connected, run .connect to connect to a device running Pico-Sdk-JS.'));
+        throw new Error(t('err-connection-not-open'));
     }
 
     if (args.unset) {
         await connection.config_write({ name: args.configName, value: null });
-        console.log(t('Unset config option %s', args.configName));
+        console.log(t('msg-config-unset', args.configName));
     } else if (args.configValue) {
         await connection.config_write({ name: args.configName, value: args.configValue });
-        console.log(t('Set config option %s to "%s"', args.configName, args.configValue));
+        console.log(t('msg-config-set', args.configName, args.configValue));
     } else {
         const result = await connection.config_read({ name: args.configName });
         console.log(result.value);

@@ -5,14 +5,14 @@ import { t } from '../locales';
 export async function formatCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('*', t('Delete all files and reformat the attached device'))
+        .command('*', t('help-format'))
         .usage('.format')
-        .example('.format --confirm', t('delete all files and reformats the attached device without additional confirmation.'))
+        .example('.format --confirm', t('help-format-example1'))
         .options({
             confirm: {
                 alias: 'y',
                 type: 'boolean',
-                description: t('confirm that all files will be deleted and the device will be formatted.'),
+                description: t('help-format-confirm'),
                 demandOption: true
             }
         })
@@ -33,10 +33,10 @@ export async function formatCommand(replServer: PsjReplServer, text: string): Pr
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error(t('Not connected, run .connect to connect to a device running Pico-Sdk-JS.'));
+        throw new Error(t('err-connection-not-open'));
     }
 
     await connection.format();
 
-    console.log(t('Device formatted'));
+    console.log(t('msg-device-formatted'));
 }

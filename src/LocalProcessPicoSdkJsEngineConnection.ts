@@ -21,7 +21,7 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
     protected openInternal(): Promise<Pick<ConnectionInfo, 'device'>> {
         return new Promise<Pick<ConnectionInfo, 'device'>>((resolve, reject) => {
             if (this.process !== null) {
-                reject(t('Process already running'));
+                reject(t('err-local-process-running'));
                 return;
             }
 
@@ -67,7 +67,7 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
 
                     this.onLog({
                         level: code === 0 ? LogLevel.Trace : LogLevel.Error,
-                        msg: t('Process exited with code %d', code ?? '<null>')
+                        msg: t('msg-process-exited', code ?? '<null>')
                     });
 
                     this.process = null;

@@ -26,7 +26,7 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
     protected openInternal(): Promise<Pick<ConnectionInfo, 'device'>> {
         return new Promise<Pick<ConnectionInfo, 'device'>>((resolve, reject) => {
             if (this.serialPort !== null) {
-                reject(t('Connection already established'));
+                reject(t('err-connection-already-open'));
                 return;
             }
 
@@ -129,7 +129,7 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
     private _onClose() {
         this.onLog({
             level: LogLevel.Trace,
-            msg: t('Serial port closed')
+            msg: t('trc-serial-port-closed')
         });
 
         this.onClose();
