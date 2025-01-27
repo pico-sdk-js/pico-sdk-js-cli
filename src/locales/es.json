@@ -1,3 +1,0 @@
-{
-    "process-header": "\nBienvenido a %s v%s\n>> CLI para conectarse a una Raspberry Pi Pico con Pico-SDK-JS instalado\n\nEscriba \".help\" para obtener más información.\n"
-}

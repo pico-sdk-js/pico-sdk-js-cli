@@ -31,7 +31,7 @@
     "dist"
   ],
   "scripts": {
-    "prebuild:only": "mkdir -p ./dist/locales && cp ./src/locales/*.json ./dist/locales",
+    "prebuild:only": "node ./scripts/copy-locales.js",
     "build:only": "tsc --project tsconfig.json",
     "eslint": "npx eslint ./src",
     "format": "prettier --write \"./src/**/*.{ts,js,json}\"",
