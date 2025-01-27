@@ -1,8 +1,13 @@
 import { addAbortListener } from 'node:events';
 import pkg from '../../package.json';
 import { ArgumentsCamelCase, Argv } from 'yargs';
+import { availableLocales, processI18NMiddleware, t } from '../locales';
 
-export interface ICoreCommandOptions {
+export interface ILangCommandOptions {
+    lang: string;
+}
+
+export interface ICoreCommandOptions extends ILangCommandOptions {
     'skip-header': boolean;
 }
 
@@ -10,11 +15,7 @@ function processHeaderMiddleware(args: ArgumentsCamelCase<ICoreCommandOptions>) 
     console.clear();
 
     if (!args.skipHeader) {
-        console.log(`
-Welcome to ${pkg.name} v${pkg.version}
->> ${pkg.description}
-
-Type ".help" for more information.`);
+        console.log(t('process-header', pkg.name, pkg.version));
     }
 }
 
@@ -29,17 +30,28 @@ async function abortListenerMiddleware() {
     }
 }
 
-export function yargsSetup(yargs: Argv) {
-    return yargs
+export function yargsSetup(yargs: Argv, defaultLocale: string) {
+    const langYargs = yargs
+        .option('lang', {
+            type: 'string',
+            hidden: true,
+            default: defaultLocale,
+            choices: availableLocales
+        })
+        .middleware(processI18NMiddleware, true);
+
+    langYargs.parse();
+
+    return langYargs
         .strict()
         .scriptName('psj')
         .option('skip-header', {
             type: 'boolean',
-            description: 'Do not output the process header.',
+            description: t('args-skip-header'),
             default: false
         })
         .middleware(processHeaderMiddleware, true)
         .middleware(abortListenerMiddleware, true)
         .demandCommand()
-        .epilogue('For more information, check out our docs on https://pico-sdk-js.github.io/');
+        .epilogue(t('args-epilogue'));
 }

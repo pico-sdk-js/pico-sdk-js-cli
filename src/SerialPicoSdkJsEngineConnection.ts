@@ -2,6 +2,7 @@ import { SerialPort } from 'serialport';
 import { CommandRequest, ConnectionInfo, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
 import { logger, LogLevel } from './psjLogger';
 import assert from 'assert';
+import { t } from './locales';
 
 const errorRegex = /!#(?<error>[a-zA-Z0-9\-_]+)#!/;
 
@@ -25,7 +26,7 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
     protected openInternal(): Promise<Pick<ConnectionInfo, 'device'>> {
         return new Promise<Pick<ConnectionInfo, 'device'>>((resolve, reject) => {
             if (this.serialPort !== null) {
-                reject('Connection already established');
+                reject(t('err-connection-already-open'));
                 return;
             }
 
@@ -128,7 +129,7 @@ export class SerialPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
     private _onClose() {
         this.onLog({
             level: LogLevel.Trace,
-            msg: 'Serial port closed'
+            msg: t('trc-serial-port-closed')
         });
 
         this.onClose();

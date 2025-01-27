@@ -3,16 +3,17 @@ import { PsjReplServer } from '../psjReplServer';
 import fs from 'fs';
 import path from 'path';
 import { ReadCommandOptions } from '../PicoSdkJsEngineConnection';
+import { t } from '../locales';
 
 export async function readCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('* <remote-path>', 'Read a file from the connected device')
+        .command('* <remote-path>', t('help-read'))
         .usage('.read <remote-path>')
         .positional('remote-path', {
             alias: 'r',
             type: 'string',
-            description: 'The name to load from the Pico device',
+            description: t('help-read-remote-path'),
             normalize: true,
             demandOption: true
         })
@@ -20,18 +21,18 @@ export async function readCommand(replServer: PsjReplServer, text: string): Prom
             'local-path': {
                 alias: 'p',
                 type: 'string',
-                description: 'The local file to write from the Pico device',
+                description: t('help-read-local-path'),
                 normalize: true
             },
             overwrite: {
                 alias: 'o',
                 type: 'boolean',
-                description: 'Overwrites existing files if they already exist with the same path name',
+                description: t('help-read-overwrite'),
                 implies: ['local-path']
             }
         })
-        .example('.read file.js --local-path ./myFile.js', 'read from the Pico with the file name "file.js" and save the local "myFile.js".')
-        .example('.read file.js', 'read from the Pico with the file name "file.js" and write to teh screen.')
+        .example('.read file.js --local-path ./myFile.js', t('help-read-example1'))
+        .example('.read file.js', t('help-read-example2'))
         .fail((msg: string) => {
             failed = true;
             console.error(msg);
@@ -49,7 +50,7 @@ export async function readCommand(replServer: PsjReplServer, text: string): Prom
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
+        throw new Error(t('err-connection-not-open'));
     }
 
     const srcName = args.remotePath;
@@ -57,7 +58,7 @@ export async function readCommand(replServer: PsjReplServer, text: string): Prom
     let contents = '';
     let bytesRead = 0;
 
-    console.log('Reading from "%s"', srcName);
+    console.log(t('msg-reading-file', srcName));
 
     let currentSegment = 0;
     let maxSegments = 1;
@@ -80,11 +81,11 @@ export async function readCommand(replServer: PsjReplServer, text: string): Prom
     }
 
     if (destName) {
-        console.log('Writing output to "%s"', destName);
+        console.log(t('msg-writing-output', destName));
         fs.writeFileSync(destName, contents, { flush: true, flag: args.overwrite ? 'w' : 'wx' });
     } else {
         console.log(contents);
     }
 
-    console.log('%d bytes (%d segments) read', bytesRead, currentSegment);
+    console.log(t('msg-file-read', bytesRead, currentSegment));
 }

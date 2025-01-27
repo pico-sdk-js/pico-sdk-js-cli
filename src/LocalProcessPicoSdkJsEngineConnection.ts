@@ -3,6 +3,7 @@ import path from 'path';
 import { CommandRequest, ConnectionInfo, PicoSdkJsEngineConnection } from './PicoSdkJsEngineConnection';
 import { LogLevel } from './psjLogger';
 import assert from 'assert';
+import { t } from './locales';
 
 export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnection {
     private readonly abortController = new AbortController();
@@ -20,7 +21,7 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
     protected openInternal(): Promise<Pick<ConnectionInfo, 'device'>> {
         return new Promise<Pick<ConnectionInfo, 'device'>>((resolve, reject) => {
             if (this.process !== null) {
-                reject('Process already running');
+                reject(t('err-local-process-running'));
                 return;
             }
 
@@ -66,7 +67,7 @@ export class LocalProcessPicoSdkJsEngineConnection extends PicoSdkJsEngineConnec
 
                     this.onLog({
                         level: code === 0 ? LogLevel.Trace : LogLevel.Error,
-                        msg: `Process exited with code ${code}`
+                        msg: t('msg-process-exited', code ?? '<null>')
                     });
 
                     this.process = null;

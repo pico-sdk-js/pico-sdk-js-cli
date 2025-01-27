@@ -1,3 +1,5 @@
+import { t } from './locales';
+
 const semVerRegex = /^(?<major>[0-9]+)\.(?<minor>[0-9]+)\.(?<patch>[0-9]+)$/;
 
 export default class Version {
@@ -8,7 +10,7 @@ export default class Version {
     constructor(v: string) {
         const result = semVerRegex.exec(v);
         if (!result) {
-            throw new Error(`string is not valid semantic version: ${v}`);
+            throw new Error(t('err-verson-parse-error', v));
         }
 
         this.major = parseInt(result[1]);

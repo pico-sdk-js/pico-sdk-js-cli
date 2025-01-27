@@ -1,17 +1,18 @@
 import Yargs from 'yargs/yargs';
 import { PsjReplServer } from '../psjReplServer';
 import { DeleteCommandOptions } from '../PicoSdkJsEngineConnection';
+import { t } from '../locales';
 
 export async function deleteCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('* <remote-path>', 'Delete a file from the connected device')
+        .command('* <remote-path>', t('help-delete'))
         .usage('.delete <remote-path>')
-        .example('.delete file.js', 'deletes from the Pico with the file name "file.js".')
+        .example('.delete file.js', t('help-delete-example1'))
         .positional('remote-path', {
             alias: 'r',
             type: 'string',
-            description: 'The name of the file to delete from the Pico device',
+            description: t('help-delete-remote-path'),
             normalize: true,
             demandOption: true
         })
@@ -32,7 +33,7 @@ export async function deleteCommand(replServer: PsjReplServer, text: string): Pr
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
+        throw new Error(t('err-connection-not-open'));
     }
 
     const srcName = args.remotePath;
@@ -43,5 +44,5 @@ export async function deleteCommand(replServer: PsjReplServer, text: string): Pr
 
     await connection.delete(options);
 
-    console.log('Deleted "%s"', srcName);
+    console.log(t('msg-file-deleted', srcName));
 }

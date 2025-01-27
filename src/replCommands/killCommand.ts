@@ -1,12 +1,13 @@
 import Yargs from 'yargs/yargs';
 import { PsjReplServer } from '../psjReplServer';
+import { t } from '../locales';
 
 export async function killCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('*', 'Kills the currently running script on the device')
+        .command('*', t('help-kill'))
         .usage('.kill')
-        .example('.kill', 'kills the currently running script on the device.')
+        .example('.kill', t('help-kill-example1'))
         .fail((msg: string) => {
             failed = true;
             console.error(msg);
@@ -24,7 +25,7 @@ export async function killCommand(replServer: PsjReplServer, text: string): Prom
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
+        throw new Error(t('err-connection-not-open'));
     }
 
     await connection.kill();

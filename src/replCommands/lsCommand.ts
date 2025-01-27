@@ -1,12 +1,13 @@
 import Yargs from 'yargs/yargs';
 import { PsjReplServer } from '../psjReplServer';
+import { t } from '../locales';
 
 export async function lsCommand(replServer: PsjReplServer, text: string): Promise<void> {
     let failed = false;
     const yargs = Yargs(text)
-        .command('*', 'List files stored on the connected device')
+        .command('*', t('help-ls'))
         .usage('.ls')
-        .example('.ls', 'list files stored on the connected device.')
+        .example('.ls', t('help-ls-example1'))
         .fail((msg: string) => {
             failed = true;
             console.error(msg);
@@ -24,12 +25,12 @@ export async function lsCommand(replServer: PsjReplServer, text: string): Promis
 
     const connection = replServer.getConnection();
     if (!connection) {
-        throw new Error('Not connected, run .connect to connect to a device running Pico-Sdk-JS.');
+        throw new Error(t('err-connection-not-open'));
     }
 
     const response = await connection.ls();
 
-    console.log('total %d file(s)', response.value.length);
+    console.log(t('msg-files-listed', response.value.length));
     if (response.value.length > 0) {
         console.table(response.value);
     }

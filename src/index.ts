@@ -9,10 +9,12 @@
 
 import yargs from 'yargs';
 import { yargsSetup } from './yargsCommands/coreCommand';
-import replCommand from './yargsCommands/replCommand';
+import { ReplCommand } from './yargsCommands/replCommand';
+import { getOsLocale } from './locales';
 
 (async function () {
-    await yargsSetup(yargs(process.argv.slice(2)))
-        .command(replCommand)
+    const osLocale = await getOsLocale();
+    await yargsSetup(yargs(process.argv.slice(2)), osLocale)
+        .command(new ReplCommand())
         .parse();
 })();
