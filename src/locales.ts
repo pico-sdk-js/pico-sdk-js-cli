@@ -1,7 +1,7 @@
 import { I18n } from 'i18n';
 import path from 'path';
 import { ArgumentsCamelCase } from 'yargs';
-import { ILangCommandOptions } from './yargsCommands/coreCommand';
+import { type ILangCommandOptions } from './yargsCommands/coreCommand';
 import { logger, LogLevel } from './psjLogger';
 
 export const availableLocales = ['en', 'es'];
