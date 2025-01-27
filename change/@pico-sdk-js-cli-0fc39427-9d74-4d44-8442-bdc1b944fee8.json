@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Introducing i18n to eventually support multiple language outputs",
+  "packageName": "@pico-sdk-js/cli",
+  "email": "jasontre@microsoft.com",
+  "dependentChangeType": "none"
+}
